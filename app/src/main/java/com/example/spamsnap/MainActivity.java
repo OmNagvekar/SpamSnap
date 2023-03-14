@@ -1,16 +1,15 @@
 package com.example.spamsnap;
 
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.os.Bundle;
+import android.widget.GridView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-
-import android.content.pm.PackageManager;
-import android.os.Build;
-import android.os.Bundle;
-import android.util.Log;
-import android.widget.GridView;
-import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -63,11 +62,9 @@ public class MainActivity extends AppCompatActivity {
             checkPermission("android.permission.READ_EXTERNAL_STORAGE",102);
             checkPermission("android.permission.WRITE_EXTERNAL_STORAGE",102);
         }
-        int image[] ={R.drawable.logo2,R.drawable.ic_launcher_background,R.drawable.ic_launcher_background,R.drawable.ic_launcher_background,R.drawable.ic_launcher_background,R.drawable.ic_launcher_background,R.drawable.ic_launcher_background,R.drawable.ic_launcher_background,R.drawable.ic_launcher_background};
+        int[] image ={R.drawable.logo2,R.drawable.ic_launcher_background,R.drawable.ic_launcher_background,R.drawable.ic_launcher_background,R.drawable.ic_launcher_background,R.drawable.ic_launcher_background,R.drawable.ic_launcher_background,R.drawable.ic_launcher_background,R.drawable.ic_launcher_background,R.drawable.logo2,R.drawable.ic_launcher_background,R.drawable.ic_launcher_background,R.drawable.ic_launcher_background,R.drawable.ic_launcher_background,R.drawable.ic_launcher_background,R.drawable.ic_launcher_background,R.drawable.logo2,R.drawable.ic_launcher_background,R.drawable.ic_launcher_background,R.drawable.logo2};
         gridView=(GridView) findViewById(R.id.gridview);
-        //GridAdapter object = new GridAdapter(image,this);
         gridView.setAdapter(new GridAdapter(image,this));
-        Log.d("123","error2");
 
     }
 }

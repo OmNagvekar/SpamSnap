@@ -22,7 +22,11 @@
                 android:layout_height="713dp"
                 android:layout_margin="10dp"
                 android:columnWidth="100dp"
+                android:verticalSpacing="8dp"
+                android:horizontalSpacing="8dp"
+                android:padding="8dp"
                 android:gravity="center"
+                android:stretchMode="columnWidth"
                 android:numColumns="auto_fit" />
         </LinearLayout>
     </ScrollView>

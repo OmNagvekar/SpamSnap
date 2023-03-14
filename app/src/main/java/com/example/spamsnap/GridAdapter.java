@@ -1,7 +1,6 @@
 package com.example.spamsnap;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,7 +37,6 @@ public class GridAdapter extends BaseAdapter {
         View view =layoutInflater.inflate(R.layout.row,null);
         ImageView img = view.findViewById(R.id.image);
         img.setImageResource(images[position]);
-        Log.d("123","error1");
         return view;
     }
 }
