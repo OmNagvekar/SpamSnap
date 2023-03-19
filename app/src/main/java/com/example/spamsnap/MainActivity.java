@@ -79,13 +79,14 @@ public class MainActivity extends AppCompatActivity {
         recyclerView=(RecyclerView) findViewById(R.id.image_recylerview);
         progressBar=(ProgressBar) findViewById(R.id.progressBar);
         GridLayoutManager layoutManager = new GridLayoutManager(this,3);
-        
+
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
         allimages=new ArrayList<>();
         if (allimages.isEmpty()){
             progressBar.setVisibility(View.VISIBLE);
             //get all images from storage
+            allimages.clear();
             allimages=getAllImages();
             //set adapter to recylerview
             recyclerView.setAdapter(new ImageAdapter(this,allimages ));
