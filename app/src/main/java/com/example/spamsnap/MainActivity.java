@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -68,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             // only for android 13 or above
             checkPermission("android.permission.READ_MEDIA_IMAGES",101);
         }else{
@@ -77,24 +78,17 @@ public class MainActivity extends AppCompatActivity {
         }
         recyclerView=(RecyclerView) findViewById(R.id.image_recylerview);
         progressBar=(ProgressBar) findViewById(R.id.progressBar);
+        GridLayoutManager layoutManager = new GridLayoutManager(this,3);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setHasFixedSize(true);
         allimages=new ArrayList<>();
         if (allimages.isEmpty()){
-            //progressBar.setVisibility(View.VISIBLE);
-            if (progressBar != null) {
-                progressBar.setVisibility(View.VISIBLE);
-            }
+            progressBar.setVisibility(View.VISIBLE);
             //get all images from storage
             allimages=getAllImages();
             //set adapter to recylerview
-//            recyclerView.setAdapter(new ImageAdapter(this,allimages ));
-//            progressBar.setVisibility(View.GONE);
-            if (recyclerView != null) {
-                recyclerView.setAdapter(new ImageAdapter(this, allimages));
-            }
-
-            if (progressBar != null) {
-                progressBar.setVisibility(View.GONE);
-            }
+            recyclerView.setAdapter(new ImageAdapter(this,allimages ));
+            progressBar.setVisibility(View.GONE);
         }
     }
 
@@ -104,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
         String []projections = {MediaStore.Images.ImageColumns.DATA,MediaStore.Images.Media.DISPLAY_NAME};
         String orderby = MediaStore.Images.Media.DATE_TAKEN;
         String absolutepath,imagename;
-        Cursor cursor = this.getContentResolver().query(uri,projections,null,null,orderby+"DESC");
+        Cursor cursor = MainActivity.this.getContentResolver().query(uri,projections,null,null,orderby+" DESC");
         try {
             cursor.moveToFirst();
             do {

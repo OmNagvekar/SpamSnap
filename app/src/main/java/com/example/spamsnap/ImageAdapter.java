@@ -1,6 +1,7 @@
 package com.example.spamsnap;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,9 @@ import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 
 import java.util.ArrayList;
 
@@ -38,12 +42,21 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
     @Override
     public void onBindViewHolder(@NonNull ImageAdapter.ImageViewHolder holder, int position) {
         Image image = allimages.get(position);
-
+        Glide.with(context).load(image.imagepath).apply(RequestOptions.centerCropTransform()).into(holder.imageView);
+        holder.imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context,ImageFullActivity.class);
+                intent.putExtra("path",image.imagepath);
+                intent.putExtra("name",image.imagename);
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return allimages.size();
     }
 
 }
