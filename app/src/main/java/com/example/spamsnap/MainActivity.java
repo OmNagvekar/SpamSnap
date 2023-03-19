@@ -1,6 +1,8 @@
 package com.example.spamsnap;
 
+import android.content.Context;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -24,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private ArrayList<Image> allimages;
     private Uri uri;
+    private Context context;
     private static final int STORAGE_PERMISSION_CODE = 101;
 
     // Function to check and request permission
@@ -98,7 +101,22 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<Image> getAllImages() {
         ArrayList<Image> images = new ArrayList<Image>();
         uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-        String []projections = MediaStore.Images.ImageColumns.DATA
+        String []projections = {MediaStore.Images.ImageColumns.DATA,MediaStore.Images.Media.DISPLAY_NAME};
+        String orderby = MediaStore.Images.Media.DATE_TAKEN;
+        String absolutepath,imagename;
+        Cursor cursor = this.getContentResolver().query(uri,projections,null,null,orderby+"DESC");
+        try {
+            cursor.moveToFirst();
+            do {
+                absolutepath= cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA));
+                imagename= cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME));
+                Image image = new Image(absolutepath,imagename);
+                images.add(image);
+            }while (cursor.moveToNext());
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return images;
     }
 
 }

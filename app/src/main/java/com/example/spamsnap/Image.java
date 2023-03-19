@@ -8,4 +8,6 @@ public class Image {
         this.imagepath = imagepath;
         this.imagename = imagename;
     }
+
+
 }
