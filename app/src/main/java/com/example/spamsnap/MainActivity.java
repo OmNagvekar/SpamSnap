@@ -1,8 +1,10 @@
 package com.example.spamsnap;
 
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.GridView;
 import android.widget.ProgressBar;
@@ -21,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
     private ArrayList<Image> allimages;
+    private Uri uri;
     private static final int STORAGE_PERMISSION_CODE = 101;
 
     // Function to check and request permission
@@ -71,18 +74,30 @@ public class MainActivity extends AppCompatActivity {
         }
         recyclerView=(RecyclerView) findViewById(R.id.image_recylerview);
         progressBar=(ProgressBar) findViewById(R.id.progressBar);
-        //allimages=ArrayList();
+        allimages=new ArrayList<>();
         if (allimages.isEmpty()){
-            progressBar.setVisibility(View.VISIBLE);
+            //progressBar.setVisibility(View.VISIBLE);
+            if (progressBar != null) {
+                progressBar.setVisibility(View.VISIBLE);
+            }
             //get all images from storage
             allimages=getAllImages();
             //set adapter to recylerview
-            recyclerView.setAdapter(new ImageAdapter(this,allimages ));
-            progressBar.setVisibility(View.GONE);
+//            recyclerView.setAdapter(new ImageAdapter(this,allimages ));
+//            progressBar.setVisibility(View.GONE);
+            if (recyclerView != null) {
+                recyclerView.setAdapter(new ImageAdapter(this, allimages));
+            }
+
+            if (progressBar != null) {
+                progressBar.setVisibility(View.GONE);
+            }
         }
     }
 
     private ArrayList<Image> getAllImages() {
+        ArrayList<Image> images = new ArrayList<Image>();
+        uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
         
     }
 
