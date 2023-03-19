@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<Image> getAllImages() {
         ArrayList<Image> images = new ArrayList<Image>();
         uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-        String projections = MediaStore.Images.ImageColumns.DATA;
+        String []projections = MediaStore.Images.ImageColumns.DATA
     }
 
 }
