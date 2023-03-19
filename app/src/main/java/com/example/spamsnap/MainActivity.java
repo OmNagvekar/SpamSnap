@@ -3,17 +3,24 @@ package com.example.spamsnap;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.GridView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    GridView gridView;
+    private RecyclerView recyclerView;
+    private ProgressBar progressBar;
+    private ArrayList<Image> allimages;
     private static final int STORAGE_PERMISSION_CODE = 101;
 
     // Function to check and request permission
@@ -62,9 +69,21 @@ public class MainActivity extends AppCompatActivity {
             checkPermission("android.permission.READ_EXTERNAL_STORAGE",102);
             checkPermission("android.permission.WRITE_EXTERNAL_STORAGE",102);
         }
-        int[] image ={R.drawable.logo2,R.drawable.ic_launcher_background,R.drawable.ic_launcher_background,R.drawable.ic_launcher_background,R.drawable.ic_launcher_background,R.drawable.ic_launcher_background,R.drawable.ic_launcher_background,R.drawable.ic_launcher_background,R.drawable.ic_launcher_background,R.drawable.logo2,R.drawable.ic_launcher_background,R.drawable.ic_launcher_background,R.drawable.ic_launcher_background,R.drawable.ic_launcher_background,R.drawable.ic_launcher_background,R.drawable.ic_launcher_background,R.drawable.logo2,R.drawable.ic_launcher_background,R.drawable.ic_launcher_background,R.drawable.logo2};
-        gridView=(GridView) findViewById(R.id.gridview);
-        gridView.setAdapter(new GridAdapter(image,this));
-
+        recyclerView=(RecyclerView) findViewById(R.id.image_recylerview);
+        progressBar=(ProgressBar) findViewById(R.id.progressBar);
+        //allimages=ArrayList();
+        if (allimages.isEmpty()){
+            progressBar.setVisibility(View.VISIBLE);
+            //get all images from storage
+            allimages=getAllImages();
+            //set adapter to recylerview
+            recyclerView.setAdapter(new ImageAdapter(this,allimages ));
+            progressBar.setVisibility(View.GONE);
+        }
     }
+
+    private ArrayList<Image> getAllImages() {
+        
+    }
+
 }
