@@ -1,4 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/text"
+        android:title="@string/Select_Images"
+        app:showAsAction="ifRoom"
+        android:visible="false"
+        app:actionLayout="@layout/action_bar_title"/>
+    <item
+        android:id="@+id/refresh"
+        android:icon="@drawable/refresh_images"
+        android:title="Refresh"
+        app:showAsAction="always|withText"/>
+    <item
+        android:id="@+id/edit"
+        android:title="@string/edit_button"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/cancel_button"
+        android:title="@string/cancel"
+        app:showAsAction="always"
+        android:visible="false"/>
 
 </menu>

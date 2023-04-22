@@ -1,18 +1,22 @@
 package com.example.spamsnap;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -25,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
+    private Menu menu ;
     private ArrayList<Image> allimages;
     private Uri uri;
     private Context context;
@@ -69,6 +74,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ActionBar actionBar = getSupportActionBar();
+       // actionBar.setDisplayShowTitleEnabled(false);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             // only for android 13 or above
             checkPermission("android.permission.READ_MEDIA_IMAGES",101);
@@ -115,4 +122,44 @@ public class MainActivity extends AppCompatActivity {
         return images;
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.edit_button_menu,menu);
+        this.menu=menu;
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        MenuItem editItem = menu.findItem(R.id.edit);
+        MenuItem selectImage = menu.findItem(R.id.text);
+        MenuItem cancel = menu.findItem(R.id.cancel_button);
+        MenuItem refresh = menu.findItem(R.id.refresh);
+//        int edit=0;
+//        Intent intent = new Intent(context,ImageAdapter.class);
+        switch (item.getItemId()){
+            case R.id.edit:
+                editItem.setVisible(false);
+                selectImage.setVisible(true);
+                cancel.setVisible(true);
+                refresh.setVisible(false);
+//                intent.putExtra("delete",edit);
+                return true;
+            case R.id.cancel_button:
+                editItem.setVisible(true);
+                cancel.setVisible(false);
+                selectImage.setVisible(false);
+                refresh.setVisible(true);
+                return true;
+            case R.id.refresh:
+                progressBar.setVisibility(View.VISIBLE);
+                allimages.clear();
+                allimages= getAllImages();
+                recyclerView.setAdapter(new ImageAdapter(this,allimages));
+                progressBar.setVisibility(View.GONE);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 }
