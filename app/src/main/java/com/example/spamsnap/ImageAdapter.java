@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -24,10 +23,11 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
         this.context=context;
     }
     public class ImageViewHolder extends RecyclerView.ViewHolder{
-        ImageView imageView;
+        ImageView imageView,checkicon;
         public ImageViewHolder(View itemview){
             super(itemview);
             imageView =itemview.findViewById(R.id.image);
+            checkicon = itemview.findViewById(R.id.check_icon);
         }
     }
     @NonNull
@@ -46,11 +46,29 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
         holder.imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context,ImageFullActivity.class);
-                intent.putExtra("path",image.imagepath);
-                intent.putExtra("name",image.imagename);
-                context.startActivity(intent);
+
+                if(MainActivity.edit){
+                    if (image.select){
+                        holder.checkicon.setVisibility(View.INVISIBLE);
+                        image.select=false;
+                    }else {
+                        image.select=true;
+                        holder.checkicon.setVisibility(View.VISIBLE);
+                    }
+                } else if (MainActivity.cancel1) {
+                    for (Image image: allimages) {
+                        image.select = false;
+                        holder.checkicon.setVisibility(View.INVISIBLE);
+                    }
+                    MainActivity.cancel1=false;
+                } else {
+                    Intent intent = new Intent(context,ImageFullActivity.class);
+                    intent.putExtra("path",image.imagepath);
+                    intent.putExtra("name",image.imagename);
+                    context.startActivity(intent);
+                }
             }
+
         });
     }
 

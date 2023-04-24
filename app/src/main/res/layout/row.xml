@@ -2,6 +2,7 @@
 <androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:gravity="center">
 
@@ -11,5 +12,14 @@
         android:layout_height="100dp"
         android:layout_margin="2dp"
         android:src="@drawable/ic_launcher_background" />
+
+    <ImageView
+        android:id="@+id/check_icon"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="-101dp"
+        android:layout_marginRight="40dp"
+        android:visibility="invisible"
+        app:srcCompat="@drawable/check_circle_outline" />
 
 </androidx.appcompat.widget.LinearLayoutCompat>

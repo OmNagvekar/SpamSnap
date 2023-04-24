@@ -25,13 +25,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
 
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
     private Menu menu ;
     private ArrayList<Image> allimages;
     private Uri uri;
+    public  static boolean edit=false;
+    public static boolean cancel1=false;
     private Context context;
     private static final int STORAGE_PERMISSION_CODE = 101;
 
@@ -135,21 +137,23 @@ public class MainActivity extends AppCompatActivity {
         MenuItem selectImage = menu.findItem(R.id.text);
         MenuItem cancel = menu.findItem(R.id.cancel_button);
         MenuItem refresh = menu.findItem(R.id.refresh);
-//        int edit=0;
-//        Intent intent = new Intent(context,ImageAdapter.class);
         switch (item.getItemId()){
             case R.id.edit:
                 editItem.setVisible(false);
                 selectImage.setVisible(true);
                 cancel.setVisible(true);
                 refresh.setVisible(false);
-//                intent.putExtra("delete",edit);
+                edit=true;
+                cancel1=false;
                 return true;
             case R.id.cancel_button:
                 editItem.setVisible(true);
                 cancel.setVisible(false);
                 selectImage.setVisible(false);
                 refresh.setVisible(true);
+                edit=false;
+                cancel1=true;
+                refresh();
                 return true;
             case R.id.refresh:
                 progressBar.setVisibility(View.VISIBLE);
@@ -157,9 +161,17 @@ public class MainActivity extends AppCompatActivity {
                 allimages= getAllImages();
                 recyclerView.setAdapter(new ImageAdapter(this,allimages));
                 progressBar.setVisibility(View.GONE);
+                Toast.makeText(this, "Refreshing ....", Toast.LENGTH_SHORT).show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+    public void refresh(){
+        progressBar.setVisibility(View.VISIBLE);
+        allimages.clear();
+        allimages= getAllImages();
+        recyclerView.setAdapter(new ImageAdapter(this,allimages));
+        progressBar.setVisibility(View.GONE);
     }
 }
