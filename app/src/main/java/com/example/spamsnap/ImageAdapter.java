@@ -17,6 +17,7 @@ import java.util.ArrayList;
 
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHolder>{
     private ArrayList<Image> allimages = new ArrayList<Image>();
+    private ArrayList<String> deleteImages = new ArrayList<String>();
     private Context context;
     public ImageAdapter (Context context,ArrayList<Image> allimages){
         this.allimages=allimages;
@@ -51,9 +52,11 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
                     if (image.select){
                         holder.checkicon.setVisibility(View.INVISIBLE);
                         image.select=false;
+                        deleteImages.remove(image.imagepath);
                     }else {
                         image.select=true;
                         holder.checkicon.setVisibility(View.VISIBLE);
+                        deleteImages.add(image.imagepath);
                     }
                 } else if (MainActivity.cancel1) {
                     for (Image image: allimages) {
@@ -61,6 +64,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
                         holder.checkicon.setVisibility(View.INVISIBLE);
                     }
                     MainActivity.cancel1=false;
+                    deleteImages.clear();
                 } else {
                     Intent intent = new Intent(context,ImageFullActivity.class);
                     intent.putExtra("path",image.imagepath);
