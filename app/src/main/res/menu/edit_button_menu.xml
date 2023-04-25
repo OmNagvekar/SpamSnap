@@ -3,12 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/text"
-        android:title="@string/Select_Images"
-        app:showAsAction="ifRoom"
-        android:visible="false"
-        app:actionLayout="@layout/action_bar_title"/>
-    <item
         android:id="@+id/refresh"
         android:icon="@drawable/refresh_images"
         android:title="Refresh"

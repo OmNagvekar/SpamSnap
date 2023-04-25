@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,6 +24,8 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity{
@@ -35,6 +38,7 @@ public class MainActivity extends AppCompatActivity{
     public  static boolean edit=false;
     public static boolean cancel1=false;
     private Context context;
+    private FloatingActionButton floatingActionButton;
     private static final int STORAGE_PERMISSION_CODE = 101;
 
     // Function to check and request permission
@@ -77,7 +81,9 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ActionBar actionBar = getSupportActionBar();
-       // actionBar.setDisplayShowTitleEnabled(false);
+//        actionBar.setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.orange)));
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             // only for android 13 or above
             checkPermission("android.permission.READ_MEDIA_IMAGES",101);
@@ -134,13 +140,15 @@ public class MainActivity extends AppCompatActivity{
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         MenuItem editItem = menu.findItem(R.id.edit);
-        MenuItem selectImage = menu.findItem(R.id.text);
+//        MenuItem selectImage = menu.findItem(R.id.text);
         MenuItem cancel = menu.findItem(R.id.cancel_button);
         MenuItem refresh = menu.findItem(R.id.refresh);
+        floatingActionButton = findViewById(R.id.floatingActionButton);
+
         switch (item.getItemId()){
             case R.id.edit:
                 editItem.setVisible(false);
-                selectImage.setVisible(true);
+                floatingActionButton.setVisibility(View.VISIBLE);
                 cancel.setVisible(true);
                 refresh.setVisible(false);
                 edit=true;
@@ -149,7 +157,7 @@ public class MainActivity extends AppCompatActivity{
             case R.id.cancel_button:
                 editItem.setVisible(true);
                 cancel.setVisible(false);
-                selectImage.setVisible(false);
+                floatingActionButton.setVisibility(View.INVISIBLE);
                 refresh.setVisible(true);
                 edit=false;
                 cancel1=true;
