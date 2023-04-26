@@ -17,7 +17,7 @@ import java.util.ArrayList;
 
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHolder>{
     private ArrayList<Image> allimages = new ArrayList<Image>();
-    private ArrayList<String> deleteImages = new ArrayList<String>();
+    public static ArrayList<String> deleteImages = new ArrayList<String>();
     private Context context;
     public ImageAdapter (Context context,ArrayList<Image> allimages){
         this.allimages=allimages;

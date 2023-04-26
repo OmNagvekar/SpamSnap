@@ -8,11 +8,12 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -26,6 +27,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity{
@@ -66,7 +68,8 @@ public class MainActivity extends AppCompatActivity{
 
             // Checking whether user granted the permission or not.
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
+                refresh();
+                requestDeletePermission();
                 // Showing the toast message
                 //Toast.makeText(MainActivity.this, "Storage Permission Granted", Toast.LENGTH_SHORT).show();
             }
@@ -82,14 +85,15 @@ public class MainActivity extends AppCompatActivity{
         setContentView(R.layout.activity_main);
         ActionBar actionBar = getSupportActionBar();
 //        actionBar.setDisplayShowTitleEnabled(false);
-//        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.orange)));
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.orange)));
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             // only for android 13 or above
             checkPermission("android.permission.READ_MEDIA_IMAGES",101);
+            checkPermission("android.permission.MANAGE_EXTERNAL_STORAGE",102);
         }else{
             checkPermission("android.permission.READ_EXTERNAL_STORAGE",102);
-            checkPermission("android.permission.WRITE_EXTERNAL_STORAGE",102);
+            checkPermission("android.permission.WRITE_EXTERNAL_STORAGE",103);
         }
         recyclerView=(RecyclerView) findViewById(R.id.image_recylerview);
         progressBar=(ProgressBar) findViewById(R.id.progressBar);
@@ -107,6 +111,7 @@ public class MainActivity extends AppCompatActivity{
             recyclerView.setAdapter(new ImageAdapter(this,allimages ));
             progressBar.setVisibility(View.GONE);
         }
+
     }
 
     private ArrayList<Image> getAllImages() {
@@ -144,6 +149,7 @@ public class MainActivity extends AppCompatActivity{
         MenuItem cancel = menu.findItem(R.id.cancel_button);
         MenuItem refresh = menu.findItem(R.id.refresh);
         floatingActionButton = findViewById(R.id.floatingActionButton);
+        Intent intent = getIntent();
 
         switch (item.getItemId()){
             case R.id.edit:
@@ -151,6 +157,33 @@ public class MainActivity extends AppCompatActivity{
                 floatingActionButton.setVisibility(View.VISIBLE);
                 cancel.setVisible(true);
                 refresh.setVisible(false);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    if (Environment.isExternalStorageManager()) {
+                        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                File f;
+                                for (String path:ImageAdapter.deleteImages){
+                                    f =  new File(path);
+                                    boolean deleted = f.delete();
+                                }
+                                refresh();
+                                floatingActionButton.setVisibility(View.GONE);
+                                editItem.setVisible(true);
+                                cancel.setVisible(false);
+                                refresh.setVisible(true);
+                                edit =false;
+                            }
+                        });
+                    }
+                    else {
+                        floatingActionButton.setVisibility(View.GONE);
+                        editItem.setVisible(true);
+                        cancel.setVisible(false);
+                        refresh.setVisible(true);
+                        requestDeletePermission();
+                    }
+                }
                 edit=true;
                 cancel1=false;
                 return true;
@@ -164,11 +197,7 @@ public class MainActivity extends AppCompatActivity{
                 refresh();
                 return true;
             case R.id.refresh:
-                progressBar.setVisibility(View.VISIBLE);
-                allimages.clear();
-                allimages= getAllImages();
-                recyclerView.setAdapter(new ImageAdapter(this,allimages));
-                progressBar.setVisibility(View.GONE);
+                refresh();
                 Toast.makeText(this, "Refreshing ....", Toast.LENGTH_SHORT).show();
                 return true;
             default:
@@ -182,4 +211,15 @@ public class MainActivity extends AppCompatActivity{
         recyclerView.setAdapter(new ImageAdapter(this,allimages));
         progressBar.setVisibility(View.GONE);
     }
+    private void requestDeletePermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+            Uri uri = Uri.fromParts("package", getPackageName(), null);
+            intent.setData(uri);
+            startActivity(intent);
+        } else {
+            Toast.makeText(this, "Cannot request delete permission on this device.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
 }
