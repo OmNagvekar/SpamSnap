@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
@@ -11,14 +12,17 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.Settings;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -34,6 +38,7 @@ public class MainActivity extends AppCompatActivity{
 
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
+    private AlertDialog alertDialog;
     private Menu menu ;
     private ArrayList<Image> allimages;
     private Uri uri;
@@ -162,17 +167,11 @@ public class MainActivity extends AppCompatActivity{
                         floatingActionButton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                File f;
-                                for (String path:ImageAdapter.deleteImages){
-                                    f =  new File(path);
-                                    boolean deleted = f.delete();
-                                }
-                                refresh();
-                                floatingActionButton.setVisibility(View.GONE);
+                                alert();
                                 editItem.setVisible(true);
                                 cancel.setVisible(false);
                                 refresh.setVisible(true);
-                                edit =false;
+
                             }
                         });
                     }
@@ -220,6 +219,37 @@ public class MainActivity extends AppCompatActivity{
         } else {
             Toast.makeText(this, "Cannot request delete permission on this device.", Toast.LENGTH_SHORT).show();
         }
+    }
+    public void alert(){
+        AlertDialog.Builder builderobj = new AlertDialog.Builder(this);
+        View view= LayoutInflater.from(this).inflate(R.layout.delete,null);
+        Button button6 =view.findViewById(R.id.button);
+        Button  button2=view.findViewById(R.id.button2);
+        builderobj.setView(view);
+        builderobj.setCancelable(false);
+        alertDialog =builderobj.create();
+        alertDialog.show();
+        button6.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialog.dismiss();
+            }
+        });
+        button2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                File f;
+                for (String path:ImageAdapter.deleteImages){
+                    f =  new File(path);
+                    boolean deleted = f.delete();
+                }
+                refresh();
+                floatingActionButton.setVisibility(View.GONE);
+                edit =false;
+                alertDialog.dismiss();
+                ((MainActivity)view.getContext()).recreate();//recreate is used to recreate activity
+            }
+        });
     }
 
 }
