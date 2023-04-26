@@ -4,11 +4,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,20 +28,29 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.mlkit.vision.common.InputImage;
+import com.google.mlkit.vision.text.Text;
+import com.google.mlkit.vision.text.TextRecognition;
+import com.google.mlkit.vision.text.TextRecognizer;
+import com.google.mlkit.vision.text.devanagari.DevanagariTextRecognizerOptions;
+import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity{
 
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
     private Menu menu ;
-    private ArrayList<Image> allimages;
+    public static ArrayList<Image> allimages;
     private Uri uri;
     public  static boolean edit=false;
     public static boolean cancel1=false;
-    private Context context;
     private FloatingActionButton floatingActionButton;
     private static final int STORAGE_PERMISSION_CODE = 101;
 
@@ -47,9 +60,6 @@ public class MainActivity extends AppCompatActivity{
         // Checking if permission is not granted
         if (ContextCompat.checkSelfPermission(MainActivity.this, permission) == PackageManager.PERMISSION_DENIED) {
             ActivityCompat.requestPermissions(MainActivity.this, new String[] { permission }, requestCode);
-        }
-        else {
-            //Toast.makeText(MainActivity.this, "Permission already granted", Toast.LENGTH_SHORT).show();
         }
     }
     // This function is called when user accept or decline the permission.
@@ -82,7 +92,7 @@ public class MainActivity extends AppCompatActivity{
         setContentView(R.layout.activity_main);
         ActionBar actionBar = getSupportActionBar();
 //        actionBar.setDisplayShowTitleEnabled(false);
-//        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.orange)));
+
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             // only for android 13 or above
@@ -91,6 +101,8 @@ public class MainActivity extends AppCompatActivity{
             checkPermission("android.permission.READ_EXTERNAL_STORAGE",102);
             checkPermission("android.permission.WRITE_EXTERNAL_STORAGE",102);
         }
+
+
         recyclerView=(RecyclerView) findViewById(R.id.image_recylerview);
         progressBar=(ProgressBar) findViewById(R.id.progressBar);
         GridLayoutManager layoutManager = new GridLayoutManager(this,3);
@@ -107,6 +119,44 @@ public class MainActivity extends AppCompatActivity{
             recyclerView.setAdapter(new ImageAdapter(this,allimages ));
             progressBar.setVisibility(View.GONE);
         }
+
+
+        // ML Model testing area
+        // English Text Recognizer (optional)
+//        TextRecognizer recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
+
+        // Marathi (Devanagari) Text Recognizer (Required )
+        TextRecognizer recognizer = TextRecognition.getClient(new DevanagariTextRecognizerOptions.Builder().build());
+
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.black_check);
+        InputImage image = InputImage.fromBitmap(bitmap,0);
+
+        Task<Text> result = recognizer.process(image).addOnSuccessListener(new OnSuccessListener<Text>() {
+            @Override
+            public void onSuccess(Text text) {
+                // task completed
+                if (text.getTextBlocks().isEmpty()){
+                    Log.d("ML MODEL", "NO text found");
+                    return;
+                }
+                for (Text.TextBlock tb: text.getTextBlocks()){
+                    for (Text.Line l : tb.getLines()){
+                        Log.d("ML MODEL", "onSuccess: "+l.getText());
+                    }
+
+                }
+
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                // Task failed with exception
+                Log.d("ML MODEL", "onFailure: "+e);
+            }
+        });
+
+
     }
 
     private ArrayList<Image> getAllImages() {

@@ -20,6 +20,6 @@
         android:layout_marginTop="-101dp"
         android:layout_marginRight="40dp"
         android:visibility="invisible"
-        app:srcCompat="@drawable/check_circle_outline" />
+        app:srcCompat="@drawable/black_check" />
 
 </androidx.appcompat.widget.LinearLayoutCompat>

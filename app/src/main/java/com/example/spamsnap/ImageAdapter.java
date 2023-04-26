@@ -19,7 +19,9 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
     private ArrayList<Image> allimages = new ArrayList<Image>();
     private ArrayList<String> deleteImages = new ArrayList<String>();
     private Context context;
-    public ImageAdapter (Context context,ArrayList<Image> allimages){
+
+
+    public ImageAdapter (Context context, ArrayList<Image> allimages){
         this.allimages=allimages;
         this.context=context;
     }
