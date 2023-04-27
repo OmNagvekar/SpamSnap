@@ -3,7 +3,7 @@
     <style name="Theme.SpamSnap" parent="Theme.AppCompat.DayNight">
         <!-- Primary brand color. -->
         <item name="colorPrimary">#FF5722</item>
-        <item name="colorPrimaryVariant">#D37956</item>
+        <item name="colorPrimaryVariant">#FF5722</item>
         <item name="colorOnPrimary">@color/black</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/teal_200</item>
