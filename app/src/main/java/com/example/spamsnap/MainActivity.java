@@ -128,7 +128,7 @@ public class MainActivity extends AppCompatActivity{
         // Marathi (Devanagari) Text Recognizer (Required )
         TextRecognizer recognizer = TextRecognition.getClient(new DevanagariTextRecognizerOptions.Builder().build());
 
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.black_check);
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.download);
         InputImage image = InputImage.fromBitmap(bitmap,0);
 
         Task<Text> result = recognizer.process(image).addOnSuccessListener(new OnSuccessListener<Text>() {
