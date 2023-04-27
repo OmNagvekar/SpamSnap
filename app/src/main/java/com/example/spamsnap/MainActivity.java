@@ -243,6 +243,7 @@ public class MainActivity extends AppCompatActivity{
                 refresh.setVisible(true);
                 edit=false;
                 cancel1=true;
+                ImageAdapter.deleteImages.clear();
                 refresh();
                 return true;
             case R.id.refresh:
