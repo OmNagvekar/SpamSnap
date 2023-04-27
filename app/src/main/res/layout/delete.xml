@@ -58,11 +58,11 @@
                 android:layout_height="48dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="5dp"
+                app:backgroundTint="@color/orange"
                 android:layout_marginBottom="5dp"
                 android:layout_weight="1"
                 android:text="Cancel"
-                android:textColor="#FFFAFAFA"
-                app:backgroundTint="#FF6200EE" />
+                android:textColor="@color/black" />
 
             <Button
                 android:id="@+id/button2"
@@ -74,8 +74,8 @@
                 android:layout_marginBottom="5dp"
                 android:layout_weight="1"
                 android:text="Delete"
-                android:textColor="#FAFAFA"
-                app:backgroundTint="#FF6200EE" />
+                android:textColor="@color/black"
+                app:backgroundTint="@color/orange"/>
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
