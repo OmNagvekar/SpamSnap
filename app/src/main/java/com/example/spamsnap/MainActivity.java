@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity{
         setContentView(R.layout.activity_main);
         ActionBar actionBar = getSupportActionBar();
 //        actionBar.setDisplayShowTitleEnabled(false);
-        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.orange)));
+//        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.orange)));
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             // only for android 13 or above
@@ -167,11 +167,14 @@ public class MainActivity extends AppCompatActivity{
                         floatingActionButton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                alert();
-                                editItem.setVisible(true);
-                                cancel.setVisible(false);
-                                refresh.setVisible(true);
-
+                                if (ImageAdapter.deleteImages.isEmpty()){
+                                    Toast.makeText(MainActivity.this, "Select atleast one image", Toast.LENGTH_SHORT).show();
+                                }else {
+                                    alert();
+                                    editItem.setVisible(false);
+                                    cancel.setVisible(true);
+                                    refresh.setVisible(false);
+                                }
                             }
                         });
                     }
@@ -229,12 +232,14 @@ public class MainActivity extends AppCompatActivity{
         builderobj.setCancelable(false);
         alertDialog =builderobj.create();
         alertDialog.show();
+        //Cancel button
         button6.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 alertDialog.dismiss();
             }
         });
+        //Delete Button
         button2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
