@@ -1,5 +1,6 @@
 package com.example.spamsnap;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -45,6 +46,7 @@ import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity{
@@ -118,15 +120,17 @@ public class MainActivity extends AppCompatActivity{
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
         allimages=new ArrayList<>();
-        if (allimages.isEmpty()){
-            progressBar.setVisibility(View.VISIBLE);
-            //get all images from storage
-            allimages.clear();
-            allimages=getAllImages();
-            //set adapter to recylerview
-            recyclerView.setAdapter(new ImageAdapter(this,allimages ));
-            progressBar.setVisibility(View.GONE);
-        }
+
+        progressBar.setVisibility(View.VISIBLE);
+
+        //get all images from storage
+        allimages.clear();
+        allimages=getAllImages();
+
+        //set adapter to recylerview
+        recyclerView.setAdapter(new ImageAdapter(this,allimages ));
+        progressBar.setVisibility(View.GONE);
+
 
 
 
@@ -137,7 +141,7 @@ public class MainActivity extends AppCompatActivity{
         // Marathi (Devanagari) Text Recognizer (Required )
         TextRecognizer recognizer = TextRecognition.getClient(new DevanagariTextRecognizerOptions.Builder().build());
 
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.download);
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.good_morning_images_for_whatsapp_app);
         InputImage image = InputImage.fromBitmap(bitmap,0);
 
         Task<Text> result = recognizer.process(image).addOnSuccessListener(new OnSuccessListener<Text>() {
@@ -152,7 +156,6 @@ public class MainActivity extends AppCompatActivity{
                     for (Text.Line l : tb.getLines()){
                         Log.d("ML MODEL", "onSuccess: "+l.getText());
                     }
-
                 }
 
 
@@ -161,7 +164,7 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onFailure(@NonNull Exception e) {
                 // Task failed with exception
-                Log.d("ML MODEL", "onFailure: "+e);
+                Log.e("ML MODEL", "onFailure: "+e);
             }
         });
     }
@@ -209,6 +212,7 @@ public class MainActivity extends AppCompatActivity{
                 floatingActionButton.setVisibility(View.VISIBLE);
                 cancel.setVisible(true);
                 refresh.setVisible(false);
+
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     if (Environment.isExternalStorageManager()) {
                         floatingActionButton.setOnClickListener(new View.OnClickListener() {
@@ -218,9 +222,10 @@ public class MainActivity extends AppCompatActivity{
                                     Toast.makeText(MainActivity.this, "Select atleast one image", Toast.LENGTH_SHORT).show();
                                 }else {
                                     alert();
-                                    editItem.setVisible(false);
-                                    cancel.setVisible(true);
-                                    refresh.setVisible(false);
+                        // ############ For Optimization: No need of below 3 lines   ###############
+//                                    editItem.setVisible(false);
+//                                    cancel.setVisible(true);
+//                                    refresh.setVisible(false);
                                 }
                             }
                         });
@@ -232,6 +237,24 @@ public class MainActivity extends AppCompatActivity{
                         refresh.setVisible(true);
                         requestDeletePermission();
                     }
+                }
+                else {
+                    // Android lower than 11
+
+                    floatingActionButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (ImageAdapter.deleteImages.isEmpty()){
+                                Toast.makeText(MainActivity.this, "Select atleast one image", Toast.LENGTH_SHORT).show();
+                            }else {
+                                alert();
+                        // ############ For Optimization: No need of below 3 lines   ###############
+//                                editItem.setVisible(false);
+//                                cancel.setVisible(true);
+//                                refresh.setVisible(false);
+                            }
+                        }
+                    });
                 }
                 edit=true;
                 cancel1=false;
@@ -292,15 +315,53 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onClick(View view) {
                 File f;
-                for (String path:ImageAdapter.deleteImages){
-                    f =  new File(path);
-                    boolean deleted = f.delete();
+                boolean deleted;
+
+                // Android lower than 11 deletion code
+                if (Build.VERSION.SDK_INT<Build.VERSION_CODES.R){
+                    ContentResolver contentResolver = MainActivity.this.getContentResolver();
+                    Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                    String selection = MediaStore.Images.Media.DATA + "=?";
+                    String[] selectionArgs;
+
+
+                    for (String path:ImageAdapter.deleteImages){
+                        f = new File(path);
+                        deleted = f.delete();
+                        if (deleted){
+                            selectionArgs = new String[] { path };
+                            // deletes the path of deleted image from Media Store
+                            contentResolver.delete(uri, selection, selectionArgs);
+
+                            alertDialog.dismiss();
+                            ((MainActivity)view.getContext()).recreate();
+
+
+                        }else{
+                            Log.d("Deletion (Android<11):", "Deletion  Failed");
+                            return;
+                        }
+
+                    }
+                    Toast.makeText(MainActivity.this,"Deleted",Toast.LENGTH_SHORT).show();
+                    ImageAdapter.deleteImages.clear();
+
                 }
-                refresh();
-                floatingActionButton.setVisibility(View.GONE);
-                edit =false;
-                alertDialog.dismiss();
-                ((MainActivity)view.getContext()).recreate();//recreate is used to recreate activity
+                else{
+                    for (String path:ImageAdapter.deleteImages){
+                        f =  new File(path);
+                        deleted = f.delete();
+
+                    }
+                    Toast.makeText(MainActivity.this,"Deleted",Toast.LENGTH_SHORT).show();
+                    // no need of below 3 lines
+//                    refresh();
+//                    floatingActionButton.setVisibility(View.GONE);
+//                    edit =false;
+                    alertDialog.dismiss();
+                    ((MainActivity)view.getContext()).recreate();//recreate is used to recreate activity
+                }
+
             }
         });
     }
