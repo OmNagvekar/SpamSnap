@@ -103,8 +103,8 @@ public class MainActivity extends AppCompatActivity{
 //        actionBar.setDisplayShowTitleEnabled(false);
 
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            // only for android 13 or above
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
+            // only for android 12 or above
             checkPermission("android.permission.READ_MEDIA_IMAGES",101);
             checkPermission("android.permission.MANAGE_EXTERNAL_STORAGE",102);
         }else{
@@ -140,33 +140,79 @@ public class MainActivity extends AppCompatActivity{
 
         // Marathi (Devanagari) Text Recognizer (Required )
         TextRecognizer recognizer = TextRecognition.getClient(new DevanagariTextRecognizerOptions.Builder().build());
+        Bitmap bitmap;
+        InputImage image ;
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inSampleSize=32;
+        int minHeightWidth = 32;
+        int imgWidth;
+        int imgheight;
+        float scale;
+        int newWidth, newHeight;
 
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.good_morning_images_for_whatsapp_app);
-        InputImage image = InputImage.fromBitmap(bitmap,0);
+        for (Image img:allimages){
+            // Loads all images
+                bitmap = BitmapFactory.decodeFile(img.imagepath,options);
 
-        Task<Text> result = recognizer.process(image).addOnSuccessListener(new OnSuccessListener<Text>() {
-            @Override
-            public void onSuccess(Text text) {
-                // task completed
-                if (text.getTextBlocks().isEmpty()){
-                    Log.d("ML MODEL", "NO text found");
-                    return;
+            // making sure that every image is atleast 32X32 pixels to avoid error from ML Model
+            // -------------- (Scaling the Input image if required) ----------
+                imgheight = bitmap.getHeight();
+                imgWidth = bitmap.getWidth();
+                if (imgheight<minHeightWidth || imgWidth<minHeightWidth){
+                    scale = Math.max((float) minHeightWidth/imgWidth,(float) minHeightWidth/imgheight);
+                    newWidth = Math.round(imgWidth * scale);
+                    newHeight = Math.round(imgheight * scale);
+                    bitmap = Bitmap.createScaledBitmap(bitmap,newWidth,newHeight,true);
                 }
-                for (Text.TextBlock tb: text.getTextBlocks()){
-                    for (Text.Line l : tb.getLines()){
-                        Log.d("ML MODEL", "onSuccess: "+l.getText());
+
+            image = InputImage.fromBitmap(bitmap,0);
+
+            // passing all images to ML Model
+            Task<Text> result = recognizer.process(image).addOnSuccessListener(new OnSuccessListener<Text>() {
+                @Override
+                public void onSuccess(Text text) {
+                    // task completed
+                    if (text.getTextBlocks().isEmpty()){
+                        Log.d("ML MODEL", "NO text found");
+                        return;
                     }
+                    for (Text.TextBlock tb: text.getTextBlocks()){
+                        for (Text.Line l : tb.getLines()){
+                            if (l.getText().toLowerCase().contains("morning")) {
+                                Log.d("ML MODEL", "onSuccess: "+l.getText().toLowerCase().contains("morning"));
+                            } else if (l.getText().toLowerCase().contains("good morning")){
+                                Log.d("ML MODEL", "onSuccess: "+l.getText().toLowerCase().contains("good morning"));
+                            } else if (l.getText().contains("शुभ प्रभात")) {
+                                Log.d("ML MODEL", "onSuccess: "+l.getText().toLowerCase().contains("शुभ प्रभात"));
+                            } else if (l.getText().contains("शुभ")) {
+                                Log.d("ML MODEL", "onSuccess: "+l.getText().toLowerCase().contains("शुभ"));
+                            } else if (l.getText().contains("सकाळ")) {
+                                Log.d("ML MODEL", "onSuccess: "+l.getText().toLowerCase().contains("सकाळ"));
+                            } else if (l.getText().contains("शुभ सकाळ")) {
+                                Log.d("ML MODEL", "onSuccess: "+l.getText().toLowerCase().contains("शुभ सकाळ"));
+                            } else if (l.getText().contains("शुभ प्रभात")) {
+                                Log.d("ML MODEL", "onSuccess: "+l.getText().toLowerCase().contains("शुभ प्रभात"));
+                            } else {
+                                Log.d("ML MODEL", "onSuccess: None of the category");
+                            }
+                        }
+                    }
+
+
                 }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    // Task failed with exception
+
+                    Log.e("ML MODEL", "onFailure: "+e);
+                }
+            });
+
+        }
 
 
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                // Task failed with exception
-                Log.e("ML MODEL", "onFailure: "+e);
-            }
-        });
+
     }
 
     private ArrayList<Image> getAllImages() {
@@ -222,10 +268,7 @@ public class MainActivity extends AppCompatActivity{
                                     Toast.makeText(MainActivity.this, "Select atleast one image", Toast.LENGTH_SHORT).show();
                                 }else {
                                     alert();
-                        // ############ For Optimization: No need of below 3 lines   ###############
-//                                    editItem.setVisible(false);
-//                                    cancel.setVisible(true);
-//                                    refresh.setVisible(false);
+
                                 }
                             }
                         });
@@ -248,10 +291,6 @@ public class MainActivity extends AppCompatActivity{
                                 Toast.makeText(MainActivity.this, "Select atleast one image", Toast.LENGTH_SHORT).show();
                             }else {
                                 alert();
-                        // ############ For Optimization: No need of below 3 lines   ###############
-//                                editItem.setVisible(false);
-//                                cancel.setVisible(true);
-//                                refresh.setVisible(false);
                             }
                         }
                     });
@@ -317,8 +356,8 @@ public class MainActivity extends AppCompatActivity{
                 File f;
                 boolean deleted;
 
-                // Android lower than 11 deletion code
-                if (Build.VERSION.SDK_INT<Build.VERSION_CODES.R){
+                // Android lower than 12 deletion code
+                if (Build.VERSION.SDK_INT<=Build.VERSION_CODES.R){
                     ContentResolver contentResolver = MainActivity.this.getContentResolver();
                     Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
                     String selection = MediaStore.Images.Media.DATA + "=?";
@@ -334,11 +373,12 @@ public class MainActivity extends AppCompatActivity{
                             contentResolver.delete(uri, selection, selectionArgs);
 
                             alertDialog.dismiss();
+
                             ((MainActivity)view.getContext()).recreate();
 
 
                         }else{
-                            Log.d("Deletion (Android<11):", "Deletion  Failed");
+                            Log.d("Deletion (Android<12):", "Deletion  Failed");
                             return;
                         }
 
@@ -354,10 +394,7 @@ public class MainActivity extends AppCompatActivity{
 
                     }
                     Toast.makeText(MainActivity.this,"Deleted",Toast.LENGTH_SHORT).show();
-                    // no need of below 3 lines
-//                    refresh();
-//                    floatingActionButton.setVisibility(View.GONE);
-//                    edit =false;
+
                     alertDialog.dismiss();
                     ((MainActivity)view.getContext()).recreate();//recreate is used to recreate activity
                 }

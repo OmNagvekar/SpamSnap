@@ -15,6 +15,8 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.SpamSnap"
+        android:largeHeap="true"
+        android:hardwareAccelerated="false"
         tools:targetApi="31">
         <activity
             android:name=".ImageFullActivity"
