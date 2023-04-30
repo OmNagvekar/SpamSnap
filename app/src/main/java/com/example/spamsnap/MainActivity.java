@@ -42,6 +42,8 @@ import com.google.mlkit.vision.text.devanagari.DevanagariTextRecognizerOptions;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity{
 
@@ -99,33 +101,31 @@ public class MainActivity extends AppCompatActivity{
 
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
             // only for android 12 or above
-            checkPermission("android.permission.READ_MEDIA_IMAGES",101);
-            checkPermission("android.permission.MANAGE_EXTERNAL_STORAGE",102);
-        }else{
-            checkPermission("android.permission.READ_EXTERNAL_STORAGE",102);
-            checkPermission("android.permission.WRITE_EXTERNAL_STORAGE",103);
+            checkPermission("android.permission.READ_MEDIA_IMAGES", 101);
+            checkPermission("android.permission.MANAGE_EXTERNAL_STORAGE", 102);
+        } else {
+            checkPermission("android.permission.READ_EXTERNAL_STORAGE", 102);
+            checkPermission("android.permission.WRITE_EXTERNAL_STORAGE", 103);
         }
 
 
-        recyclerView=(RecyclerView) findViewById(R.id.image_recylerview);
-        progressBar=(ProgressBar) findViewById(R.id.progressBar);
-        GridLayoutManager layoutManager = new GridLayoutManager(this,3);
+        recyclerView = (RecyclerView) findViewById(R.id.image_recylerview);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        GridLayoutManager layoutManager = new GridLayoutManager(this, 3);
 
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
-        allimages=new ArrayList<>();
+        allimages = new ArrayList<>();
 
         progressBar.setVisibility(View.VISIBLE);
 
         //get all images from storage
         allimages.clear();
-        allimages=getAllImages();
+        allimages = getAllImages();
 
         //set adapter to recylerview
-        recyclerView.setAdapter(new ImageAdapter(this,allimages ));
+        recyclerView.setAdapter(new ImageAdapter(this, allimages));
         progressBar.setVisibility(View.GONE);
-
-
 
 
         // ML Model testing area
@@ -134,79 +134,87 @@ public class MainActivity extends AppCompatActivity{
 
         // Marathi (Devanagari) Text Recognizer (Required )
         TextRecognizer recognizer = TextRecognition.getClient(new DevanagariTextRecognizerOptions.Builder().build());
-        Bitmap bitmap;
-        InputImage image ;
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inSampleSize=32;
-        int minHeightWidth = 32;
-        int imgWidth;
-        int imgheight;
-        float scale;
-        int newWidth, newHeight;
+        //Bitmap bitmap;
+        //InputImage image;
 
-        for (Image img:allimages){
-            // Loads all images
-                bitmap = BitmapFactory.decodeFile(img.imagepath,options);
+        ExecutorService threadPool = Executors.newFixedThreadPool(4);
 
-            // making sure that every image is atleast 32X32 pixels to avoid error from ML Model
-            // -------------- (Scaling the Input image if required) ----------
-                imgheight = bitmap.getHeight();
-                imgWidth = bitmap.getWidth();
-                if (imgheight<minHeightWidth || imgWidth<minHeightWidth){
-                    scale = Math.max((float) minHeightWidth/imgWidth,(float) minHeightWidth/imgheight);
-                    newWidth = Math.round(imgWidth * scale);
-                    newHeight = Math.round(imgheight * scale);
-                    bitmap = Bitmap.createScaledBitmap(bitmap,newWidth,newHeight,true);
-                }
-
-            image = InputImage.fromBitmap(bitmap,0);
-
-            // passing all images to ML Model
-            Task<Text> result = recognizer.process(image).addOnSuccessListener(new OnSuccessListener<Text>() {
+        for (Image img : allimages) {
+            threadPool.execute(new Runnable() {
                 @Override
-                public void onSuccess(Text text) {
-                    // task completed
-                    if (text.getTextBlocks().isEmpty()){
-                        Log.d("ML MODEL", "NO text found");
-                        return;
+                public void run() {
+                    // Loads all images
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    InputImage image;
+                    options.inSampleSize = 1;
+                    int minHeightWidth = 32;
+                    int imgWidth;
+                    int imgheight;
+                    float scale;
+                    int newWidth, newHeight;
+                    Bitmap bitmap = BitmapFactory.decodeFile(img.imagepath, options);
+
+                    // making sure that every image is atleast 32X32 pixels to avoid error from ML Model
+                    // -------------- (Scaling the Input image if required) ----------
+                    imgheight = bitmap.getHeight();
+                    imgWidth = bitmap.getWidth();
+                    if (imgheight < minHeightWidth || imgWidth < minHeightWidth) {
+                        scale = Math.max((float) minHeightWidth / imgWidth, (float) minHeightWidth / imgheight);
+                        newWidth = Math.round(imgWidth * scale);
+                        newHeight = Math.round(imgheight * scale);
+                        bitmap = Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true);
                     }
-                    for (Text.TextBlock tb: text.getTextBlocks()){
-                        for (Text.Line l : tb.getLines()){
-                            if (l.getText().toLowerCase().contains("morning")) {
-                                Log.d("ML MODEL", "onSuccess: "+l.getText().toLowerCase().contains("morning"));
-                            } else if (l.getText().toLowerCase().contains("good morning")){
-                                Log.d("ML MODEL", "onSuccess: "+l.getText().toLowerCase().contains("good morning"));
-                            } else if (l.getText().contains("शुभ प्रभात")) {
-                                Log.d("ML MODEL", "onSuccess: "+l.getText().toLowerCase().contains("शुभ प्रभात"));
-                            } else if (l.getText().contains("शुभ")) {
-                                Log.d("ML MODEL", "onSuccess: "+l.getText().toLowerCase().contains("शुभ"));
-                            } else if (l.getText().contains("सकाळ")) {
-                                Log.d("ML MODEL", "onSuccess: "+l.getText().toLowerCase().contains("सकाळ"));
-                            } else if (l.getText().contains("शुभ सकाळ")) {
-                                Log.d("ML MODEL", "onSuccess: "+l.getText().toLowerCase().contains("शुभ सकाळ"));
-                            } else if (l.getText().contains("शुभ प्रभात")) {
-                                Log.d("ML MODEL", "onSuccess: "+l.getText().toLowerCase().contains("शुभ प्रभात"));
-                            } else {
-                                Log.d("ML MODEL", "onSuccess: None of the category");
+
+                    image = InputImage.fromBitmap(bitmap, 0);
+
+                    // passing all images to ML Model
+                    Task<Text> result = recognizer.process(image).addOnSuccessListener(new OnSuccessListener<Text>() {
+                        @Override
+                        public void onSuccess(Text text) {
+                            // task completed
+                            if (text.getTextBlocks().isEmpty()) {
+                                Log.d("ML MODEL", "NO text found");
+                                return;
                             }
+                            for (Text.TextBlock tb : text.getTextBlocks()) {
+                                for (Text.Line l : tb.getLines()) {
+                                    Log.d("ML MODEL", "onSuccess: " + l.getText());
+                                    if (l.getText().toLowerCase().contains("morning")) {
+                                        Log.d("ML MODEL", "onSuccess: " + l.getText().toLowerCase().contains("morning"));
+                                    } else if (l.getText().toLowerCase().contains("good morning")) {
+                                        Log.d("ML MODEL", "onSuccess: " + l.getText().toLowerCase().contains("good morning"));
+                                    } else if (l.getText().contains("शुभ प्रभात")) {
+                                        Log.d("ML MODEL", "onSuccess: " + l.getText().toLowerCase().contains("शुभ प्रभात"));
+                                    } else if (l.getText().contains("शुभ")) {
+                                        Log.d("ML MODEL", "onSuccess: " + l.getText().toLowerCase().contains("शुभ"));
+                                    } else if (l.getText().contains("सकाळ")) {
+                                        Log.d("ML MODEL", "onSuccess: " + l.getText().toLowerCase().contains("सकाळ"));
+                                    } else if (l.getText().contains("शुभ सकाळ")) {
+                                        Log.d("ML MODEL", "onSuccess: " + l.getText().toLowerCase().contains("शुभ सकाळ"));
+                                    } else if (l.getText().contains("शुभ प्रभात")) {
+                                        Log.d("ML MODEL", "onSuccess: " + l.getText().toLowerCase().contains("शुभ प्रभात"));
+                                    } else {
+                                        Log.d("ML MODEL", "onSuccess: None of the category");
+                                    }
+                                }
+                            }
+
+
                         }
-                    }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            // Task failed with exception
 
+                            Log.e("ML MODEL", "onFailure: " + e);
+                        }
+                    });
 
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    // Task failed with exception
-
-                    Log.e("ML MODEL", "onFailure: "+e);
                 }
             });
 
         }
-
-
-
+        threadPool.shutdown();
     }
 
     private ArrayList<Image> getAllImages() {
