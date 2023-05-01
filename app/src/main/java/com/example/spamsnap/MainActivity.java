@@ -1,19 +1,26 @@
 package com.example.spamsnap;
 
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Paint;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.LayoutInflater;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -39,14 +46,14 @@ import com.google.mlkit.vision.text.Text;
 import com.google.mlkit.vision.text.TextRecognition;
 import com.google.mlkit.vision.text.TextRecognizer;
 import com.google.mlkit.vision.text.devanagari.DevanagariTextRecognizerOptions;
+import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.Iterator;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity{
-
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
     private AlertDialog alertDialog;
@@ -86,7 +93,7 @@ public class MainActivity extends AppCompatActivity{
                 //Toast.makeText(MainActivity.this, "Storage Permission Granted", Toast.LENGTH_SHORT).show();
             }
             else {
-               Toast.makeText(MainActivity.this, "Storage Permission Denied", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Storage Permission Denied", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -101,120 +108,42 @@ public class MainActivity extends AppCompatActivity{
 
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
             // only for android 12 or above
-            checkPermission("android.permission.READ_MEDIA_IMAGES", 101);
-            checkPermission("android.permission.MANAGE_EXTERNAL_STORAGE", 102);
-        } else {
-            checkPermission("android.permission.READ_EXTERNAL_STORAGE", 102);
-            checkPermission("android.permission.WRITE_EXTERNAL_STORAGE", 103);
+            checkPermission("android.permission.READ_MEDIA_IMAGES",101);
+            checkPermission("android.permission.MANAGE_EXTERNAL_STORAGE",102);
+        }else{
+            checkPermission("android.permission.READ_EXTERNAL_STORAGE",102);
+            checkPermission("android.permission.WRITE_EXTERNAL_STORAGE",103);
         }
 
 
-        recyclerView = (RecyclerView) findViewById(R.id.image_recylerview);
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        GridLayoutManager layoutManager = new GridLayoutManager(this, 3);
+
+        recyclerView=(RecyclerView) findViewById(R.id.image_recylerview);
+        progressBar=(ProgressBar) findViewById(R.id.progressBar);
+        GridLayoutManager layoutManager = new GridLayoutManager(this,3);
 
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
-        allimages = new ArrayList<>();
+        allimages=new ArrayList<>();
 
         progressBar.setVisibility(View.VISIBLE);
 
         //get all images from storage
         allimages.clear();
-        allimages = getAllImages();
+        allimages=getAllImages();
+
+        MLthread obj = new MLthread();
+        obj.setPriority(Thread.MAX_PRIORITY);
+        obj.start();
 
         //set adapter to recylerview
-        recyclerView.setAdapter(new ImageAdapter(this, allimages));
+        recyclerView.setAdapter(new ImageAdapter(this,allimages ));
         progressBar.setVisibility(View.GONE);
 
 
-        // ML Model testing area
-        // English Text Recognizer (optional)
-//        TextRecognizer recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
-
-        // Marathi (Devanagari) Text Recognizer (Required )
-        TextRecognizer recognizer = TextRecognition.getClient(new DevanagariTextRecognizerOptions.Builder().build());
-        //Bitmap bitmap;
-        //InputImage image;
-
-        ExecutorService threadPool = Executors.newFixedThreadPool(4);
-
-        for (Image img : allimages) {
-            threadPool.execute(new Runnable() {
-                @Override
-                public void run() {
-                    // Loads all images
-                    BitmapFactory.Options options = new BitmapFactory.Options();
-                    InputImage image;
-                    options.inSampleSize = 1;
-                    int minHeightWidth = 32;
-                    int imgWidth;
-                    int imgheight;
-                    float scale;
-                    int newWidth, newHeight;
-                    Bitmap bitmap = BitmapFactory.decodeFile(img.imagepath, options);
-
-                    // making sure that every image is atleast 32X32 pixels to avoid error from ML Model
-                    // -------------- (Scaling the Input image if required) ----------
-                    imgheight = bitmap.getHeight();
-                    imgWidth = bitmap.getWidth();
-                    if (imgheight < minHeightWidth || imgWidth < minHeightWidth) {
-                        scale = Math.max((float) minHeightWidth / imgWidth, (float) minHeightWidth / imgheight);
-                        newWidth = Math.round(imgWidth * scale);
-                        newHeight = Math.round(imgheight * scale);
-                        bitmap = Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true);
-                    }
-
-                    image = InputImage.fromBitmap(bitmap, 0);
-
-                    // passing all images to ML Model
-                    Task<Text> result = recognizer.process(image).addOnSuccessListener(new OnSuccessListener<Text>() {
-                        @Override
-                        public void onSuccess(Text text) {
-                            // task completed
-                            if (text.getTextBlocks().isEmpty()) {
-                                Log.d("ML MODEL", "NO text found");
-                                return;
-                            }
-                            for (Text.TextBlock tb : text.getTextBlocks()) {
-                                for (Text.Line l : tb.getLines()) {
-                                    Log.d("ML MODEL", "onSuccess: " + l.getText());
-                                    if (l.getText().toLowerCase().contains("morning")) {
-                                        Log.d("ML MODEL", "onSuccess: " + l.getText().toLowerCase().contains("morning"));
-                                    } else if (l.getText().toLowerCase().contains("good morning")) {
-                                        Log.d("ML MODEL", "onSuccess: " + l.getText().toLowerCase().contains("good morning"));
-                                    } else if (l.getText().contains("शुभ प्रभात")) {
-                                        Log.d("ML MODEL", "onSuccess: " + l.getText().toLowerCase().contains("शुभ प्रभात"));
-                                    } else if (l.getText().contains("शुभ")) {
-                                        Log.d("ML MODEL", "onSuccess: " + l.getText().toLowerCase().contains("शुभ"));
-                                    } else if (l.getText().contains("सकाळ")) {
-                                        Log.d("ML MODEL", "onSuccess: " + l.getText().toLowerCase().contains("सकाळ"));
-                                    } else if (l.getText().contains("शुभ सकाळ")) {
-                                        Log.d("ML MODEL", "onSuccess: " + l.getText().toLowerCase().contains("शुभ सकाळ"));
-                                    } else if (l.getText().contains("शुभ प्रभात")) {
-                                        Log.d("ML MODEL", "onSuccess: " + l.getText().toLowerCase().contains("शुभ प्रभात"));
-                                    } else {
-                                        Log.d("ML MODEL", "onSuccess: None of the category");
-                                    }
-                                }
-                            }
 
 
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            // Task failed with exception
 
-                            Log.e("ML MODEL", "onFailure: " + e);
-                        }
-                    });
 
-                }
-            });
-
-        }
-        threadPool.shutdown();
     }
 
     private ArrayList<Image> getAllImages() {
@@ -403,6 +332,103 @@ public class MainActivity extends AppCompatActivity{
 
             }
         });
+    }
+
+    public static Bitmap convertToBlackAndWhite(Bitmap originalBitmap) {
+        Bitmap blackAndWhiteBitmap = Bitmap.createBitmap(originalBitmap.getWidth(), originalBitmap.getHeight(), Bitmap.Config.RGB_565);
+        Canvas canvas = new Canvas(blackAndWhiteBitmap);
+        ColorMatrix colorMatrix = new ColorMatrix();
+        colorMatrix.setSaturation(0);
+        Paint paint = new Paint();
+        paint.setColorFilter(new ColorMatrixColorFilter(colorMatrix));
+        canvas.drawBitmap(originalBitmap, 0, 0, paint);
+        return blackAndWhiteBitmap;
+    }
+    class MLthread extends Thread{
+
+        @Override
+        public void run() {
+            Log.d("ML MODEL", "run: Running ML Model thread");
+            // ML Model testing area
+            // English Text Recognizer (optional)
+//        TextRecognizer recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
+
+            // Marathi (Devanagari) Text Recognizer (Required )
+            TextRecognizer recognizer = TextRecognition.getClient(new DevanagariTextRecognizerOptions.Builder().build());
+
+            InputImage image ;
+            Bitmap bitmap;
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inSampleSize=2;
+            int minHeightWidth = 32;
+            int imgWidth;
+            int imgheight;
+            float scale;
+            int newWidth, newHeight;
+
+            for (Image img:allimages){
+                // Loads all images
+                bitmap = BitmapFactory.decodeFile(img.imagepath,options);
+
+
+                // making sure that every image is atleast 32X32 pixels to avoid error from ML Model
+                // -------------- (Scaling the Input image if required) ----------
+                imgheight = bitmap.getHeight();
+                imgWidth = bitmap.getWidth();
+                if (imgheight<minHeightWidth || imgWidth<minHeightWidth){
+                    scale = Math.max((float) minHeightWidth/imgWidth,(float) minHeightWidth/imgheight);
+                    newWidth = Math.round(imgWidth * scale);
+                    newHeight = Math.round(imgheight * scale);
+                    bitmap = Bitmap.createScaledBitmap(bitmap,newWidth,newHeight,true);
+                }
+//                bitmap = convertToBlackAndWhite(bitmap);
+                image = InputImage.fromBitmap(bitmap,0);
+
+                // passing all images to ML Model
+                Task<Text> result = recognizer.process(image).addOnSuccessListener(new OnSuccessListener<Text>() {
+                    @Override
+                    public void onSuccess(Text text) {
+                        // task completed
+                        if (text.getTextBlocks().isEmpty()){
+                            Log.d("ML MODEL", "NO text found");
+                            return;
+                        }
+                        for (Text.TextBlock tb: text.getTextBlocks()){
+                            for (Text.Line l : tb.getLines()){
+                                Log.d("ML MODEL", "Text : "+l.getText());
+                                if (l.getText().toLowerCase().contains("morning")) {
+                                    Log.d("ML MODEL", "onSuccess: "+l.getText().toLowerCase().contains("morning"));
+                                } else if (l.getText().toLowerCase().contains("good morning")){
+                                    Log.d("ML MODEL", "onSuccess: "+l.getText().toLowerCase().contains("good morning"));
+                                } else if (l.getText().contains("शुभ प्रभात")) {
+                                    Log.d("ML MODEL", "onSuccess: "+l.getText().toLowerCase().contains("शुभ प्रभात"));
+                                } else if (l.getText().contains("शुभ")) {
+                                    Log.d("ML MODEL", "onSuccess: "+l.getText().toLowerCase().contains("शुभ"));
+                                } else if (l.getText().contains("सकाळ")) {
+                                    Log.d("ML MODEL", "onSuccess: "+l.getText().toLowerCase().contains("सकाळ"));
+                                } else if (l.getText().contains("शुभ सकाळ")) {
+                                    Log.d("ML MODEL", "onSuccess: "+l.getText().toLowerCase().contains("शुभ सकाळ"));
+                                } else if (l.getText().contains("शुभ प्रभात")) {
+                                    Log.d("ML MODEL", "onSuccess: "+l.getText().toLowerCase().contains("शुभ प्रभात"));
+                                } else {
+                                    Log.d("ML MODEL", "onSuccess: None of the category");
+                                }
+                            }
+                        }
+
+
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Task failed with exception
+
+                        Log.e("ML MODEL", "onFailure: "+e);
+                    }
+                });
+
+            }
+        }
     }
 
 }
