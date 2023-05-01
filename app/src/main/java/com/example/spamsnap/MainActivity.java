@@ -370,7 +370,6 @@ public class MainActivity extends AppCompatActivity{
                 // Loads all images
                 bitmap = BitmapFactory.decodeFile(img.imagepath,options);
 
-
                 // making sure that every image is atleast 32X32 pixels to avoid error from ML Model
                 // -------------- (Scaling the Input image if required) ----------
                 imgheight = bitmap.getHeight();
@@ -382,7 +381,7 @@ public class MainActivity extends AppCompatActivity{
                     bitmap = Bitmap.createScaledBitmap(bitmap,newWidth,newHeight,true);
                 }
 //                bitmap = convertToBlackAndWhite(bitmap);
-                image = InputImage.fromBitmap(bitmap,0);
+                image = InputImage.fromBitmap(convertToBlackAndWhite(bitmap),0);
 
                 // passing all images to ML Model
                 Task<Text> result = recognizer.process(image).addOnSuccessListener(new OnSuccessListener<Text>() {
