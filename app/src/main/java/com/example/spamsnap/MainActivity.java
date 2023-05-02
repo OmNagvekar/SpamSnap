@@ -64,6 +64,9 @@ public class MainActivity extends AppCompatActivity{
     public static boolean cancel1=false;
     private FloatingActionButton floatingActionButton;
     private static final int STORAGE_PERMISSION_CODE = 101;
+    int size;
+    MLthread obj = new MLthread();
+
 
     // Function to check and request permission
     public void checkPermission(String permission, int requestCode)
@@ -99,10 +102,37 @@ public class MainActivity extends AppCompatActivity{
     }
 
     @Override
+    protected void onPause() {
+
+        Log.d("imagecounter", "onPause: : Thread paused.");
+        try {
+            // thread goes into waiting state
+            obj.wait();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d("imagecounter", "onResume: : Thread created/resumed");
+        if (obj.isAlive()){
+            // resumes existing thread
+            obj.notify();
+        }else {
+            // starts new thread
+            obj.setPriority(Thread.MAX_PRIORITY);obj.setDaemon(true);
+            obj.start();
+        }
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ActionBar actionBar = getSupportActionBar();
+//        ActionBar actionBar = getSupportActionBar();
 //        actionBar.setDisplayShowTitleEnabled(false);
 
 
@@ -130,18 +160,11 @@ public class MainActivity extends AppCompatActivity{
         //get all images from storage
         allimages.clear();
         allimages=getAllImages();
-
-        MLthread obj = new MLthread();
-        obj.setPriority(Thread.MAX_PRIORITY);
-        obj.start();
+        size = allimages.size();
 
         //set adapter to recylerview
         recyclerView.setAdapter(new ImageAdapter(this,allimages ));
         progressBar.setVisibility(View.GONE);
-
-
-
-
 
 
     }
@@ -346,18 +369,18 @@ public class MainActivity extends AppCompatActivity{
     }
     class MLthread extends Thread{
 
+        int counter= 0;
         @Override
         public void run() {
-            Log.d("ML MODEL", "run: Running ML Model thread");
             // ML Model testing area
             // English Text Recognizer (optional)
-//        TextRecognizer recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
+            // TextRecognizer recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
 
             // Marathi (Devanagari) Text Recognizer (Required )
             TextRecognizer recognizer = TextRecognition.getClient(new DevanagariTextRecognizerOptions.Builder().build());
 
             InputImage image ;
-            Bitmap bitmap;
+
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inSampleSize=2;
             int minHeightWidth = 32;
@@ -365,10 +388,16 @@ public class MainActivity extends AppCompatActivity{
             int imgheight;
             float scale;
             int newWidth, newHeight;
-
             for (Image img:allimages){
+                counter +=1;
+                try {
+                    Thread.sleep(250);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
                 // Loads all images
-                bitmap = BitmapFactory.decodeFile(img.imagepath,options);
+                Log.d("imagecounter", counter+" of "+size+": Image name  -->  "+img.imagename);
+               Bitmap bitmap = BitmapFactory.decodeFile(img.imagepath,options);
 
                 // making sure that every image is atleast 32X32 pixels to avoid error from ML Model
                 // -------------- (Scaling the Input image if required) ----------
@@ -389,28 +418,28 @@ public class MainActivity extends AppCompatActivity{
                     public void onSuccess(Text text) {
                         // task completed
                         if (text.getTextBlocks().isEmpty()){
-                            Log.d("ML MODEL", "NO text found");
+//                            Log.d("ML MODEL", counter+"of "+size+": NO text found");
                             return;
                         }
                         for (Text.TextBlock tb: text.getTextBlocks()){
                             for (Text.Line l : tb.getLines()){
-                                Log.d("ML MODEL", "Text : "+l.getText());
+//                                Log.d("ML MODEL", counter+"of "+size+": Text ="+l.getText());
                                 if (l.getText().toLowerCase().contains("morning")) {
-                                    Log.d("ML MODEL", "onSuccess: "+l.getText().toLowerCase().contains("morning"));
+                                    Log.d("ML MODEL", counter+" of "+size+" Text: "+l.getText());
                                 } else if (l.getText().toLowerCase().contains("good morning")){
-                                    Log.d("ML MODEL", "onSuccess: "+l.getText().toLowerCase().contains("good morning"));
+                                    Log.d("ML MODEL", counter+" of "+size+" Text: "+l.getText());
                                 } else if (l.getText().contains("शुभ प्रभात")) {
-                                    Log.d("ML MODEL", "onSuccess: "+l.getText().toLowerCase().contains("शुभ प्रभात"));
+                                    Log.d("ML MODEL", counter+" of "+size+" Text: "+l.getText());
                                 } else if (l.getText().contains("शुभ")) {
-                                    Log.d("ML MODEL", "onSuccess: "+l.getText().toLowerCase().contains("शुभ"));
+                                    Log.d("ML MODEL", counter+" of "+size+" Text: "+l.getText());
                                 } else if (l.getText().contains("सकाळ")) {
-                                    Log.d("ML MODEL", "onSuccess: "+l.getText().toLowerCase().contains("सकाळ"));
+                                    Log.d("ML MODEL", counter+" of "+size+" Text: "+l.getText());
                                 } else if (l.getText().contains("शुभ सकाळ")) {
-                                    Log.d("ML MODEL", "onSuccess: "+l.getText().toLowerCase().contains("शुभ सकाळ"));
-                                } else if (l.getText().contains("शुभ प्रभात")) {
-                                    Log.d("ML MODEL", "onSuccess: "+l.getText().toLowerCase().contains("शुभ प्रभात"));
+                                    Log.d("ML MODEL", counter+" of "+size+" Text: "+l.getText());
+                                } else if (l.getText().contains("प्रभात")) {
+                                    Log.d("ML MODEL", counter+" of "+size+" Text: "+l.getText());
                                 } else {
-                                    Log.d("ML MODEL", "onSuccess: None of the category");
+//                                    Log.d("ML MODEL", counter+"of "+size+"onSuccess: None of the category");
                                 }
                             }
                         }
@@ -425,7 +454,6 @@ public class MainActivity extends AppCompatActivity{
                         Log.e("ML MODEL", "onFailure: "+e);
                     }
                 });
-
             }
         }
     }
