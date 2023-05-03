@@ -14,6 +14,7 @@ import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -65,7 +66,7 @@ public class MainActivity extends AppCompatActivity{
     private FloatingActionButton floatingActionButton;
     private static final int STORAGE_PERMISSION_CODE = 101;
     int size;
-    MLthread obj = new MLthread();
+//    MLthread obj = new MLthread();
 
 
     // Function to check and request permission
@@ -101,32 +102,6 @@ public class MainActivity extends AppCompatActivity{
         }
     }
 
-    @Override
-    protected void onPause() {
-
-        Log.d("imagecounter", "onPause: : Thread paused.");
-        try {
-            // thread goes into waiting state
-            obj.wait();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        super.onPause();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.d("imagecounter", "onResume: : Thread created/resumed");
-        if (obj.isAlive()){
-            // resumes existing thread
-            obj.notify();
-        }else {
-            // starts new thread
-            obj.setPriority(Thread.MAX_PRIORITY);obj.setDaemon(true);
-            obj.start();
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -161,6 +136,9 @@ public class MainActivity extends AppCompatActivity{
         allimages.clear();
         allimages=getAllImages();
         size = allimages.size();
+
+        ASyncMlThread obj = new ASyncMlThread();
+        obj.execute();
 
         //set adapter to recylerview
         recyclerView.setAdapter(new ImageAdapter(this,allimages ));
@@ -367,11 +345,12 @@ public class MainActivity extends AppCompatActivity{
         canvas.drawBitmap(originalBitmap, 0, 0, paint);
         return blackAndWhiteBitmap;
     }
-    class MLthread extends Thread{
 
-        int counter= 0;
+    class ASyncMlThread extends AsyncTask<Void, Void,Void>{
+        int counter = 0;
+
         @Override
-        public void run() {
+        protected Void doInBackground(Void... voids) {
             // ML Model testing area
             // English Text Recognizer (optional)
             // TextRecognizer recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
@@ -389,7 +368,7 @@ public class MainActivity extends AppCompatActivity{
             float scale;
             int newWidth, newHeight;
             for (Image img:allimages){
-                counter +=1;
+                counter += 1;
                 try {
                     Thread.sleep(250);
                 } catch (InterruptedException e) {
@@ -397,7 +376,7 @@ public class MainActivity extends AppCompatActivity{
                 }
                 // Loads all images
                 Log.d("imagecounter", counter+" of "+size+": Image name  -->  "+img.imagename);
-               Bitmap bitmap = BitmapFactory.decodeFile(img.imagepath,options);
+                Bitmap bitmap = BitmapFactory.decodeFile(img.imagepath,options);
 
                 // making sure that every image is atleast 32X32 pixels to avoid error from ML Model
                 // -------------- (Scaling the Input image if required) ----------
@@ -409,7 +388,7 @@ public class MainActivity extends AppCompatActivity{
                     newHeight = Math.round(imgheight * scale);
                     bitmap = Bitmap.createScaledBitmap(bitmap,newWidth,newHeight,true);
                 }
-//                bitmap = convertToBlackAndWhite(bitmap);
+
                 image = InputImage.fromBitmap(convertToBlackAndWhite(bitmap),0);
 
                 // passing all images to ML Model
@@ -455,7 +434,7 @@ public class MainActivity extends AppCompatActivity{
                     }
                 });
             }
+            return null;
         }
     }
-
 }
