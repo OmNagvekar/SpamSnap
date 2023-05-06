@@ -5,23 +5,29 @@ import static com.example.spamsnap.MainActivity.convertToBlackAndWhite;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -38,12 +44,67 @@ public class SplashActivity extends AppCompatActivity {
 //    private ProgressBar mProgressBar;
 //    private TextView percent;
     float size;
+    TextView percent;
+    ProgressBar progressBar;
+    static float percentage;
+
+    private static final int STORAGE_PERMISSION_CODE = 101;
     float counter =0.0f;
+    public void checkPermission(String permission, int requestCode)
+    {
+        // Checking if permission is not granted
+        if (ContextCompat.checkSelfPermission(SplashActivity.this, permission) == PackageManager.PERMISSION_DENIED) {
+            ActivityCompat.requestPermissions(SplashActivity.this, new String[] { permission }, requestCode);
+        }
+    }
+    // This function is called when user accept or decline the permission.
+    // Request Code is used to check which permission called this function.
+    // This request code is provided when user is prompt for permission.
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults)
+    {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == STORAGE_PERMISSION_CODE) {
+
+            // Checking whether user granted the permission or not.
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                requestDeletePermission();
+                // Showing the toast message
+                //Toast.makeText(MainActivity.this, "Storage Permission Granted", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                Toast.makeText(SplashActivity.this, "Storage Permission Denied", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+    private void requestDeletePermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+            Uri uri = Uri.fromParts("package", getPackageName(), null);
+            intent.setData(uri);
+            startActivity(intent);
+        } else {
+            Toast.makeText(this, "Cannot request delete permission on this device.", Toast.LENGTH_SHORT).show();
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+        percent = findViewById(R.id.percent);
+        progressBar = findViewById(R.id.progress_bar);
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
+            // only for android 12 or above
+            checkPermission("android.permission.READ_MEDIA_IMAGES",101);
+            checkPermission("android.permission.MANAGE_EXTERNAL_STORAGE",102);
+        }else{
+            checkPermission("android.permission.READ_EXTERNAL_STORAGE",102);
+            checkPermission("android.permission.WRITE_EXTERNAL_STORAGE",103);
+        }
 
         allimages = getAllImages();
         size = allimages.size();
@@ -82,10 +143,14 @@ public class SplashActivity extends AppCompatActivity {
     }
 
      class LoadDataTask extends AsyncTask<Void, Integer, Void> {
-        TextView percent = findViewById(R.id.percent);
-        ProgressBar progressBar = findViewById(R.id.progress_bar);
 
-        @Override
+//         @Override
+//         protected void onPreExecute() {
+//             super.onPreExecute();
+//
+//         }
+
+         @Override
         protected Void doInBackground(Void... voids) {
             // ML Model testing area
             // English Text Recognizer (optional)
@@ -100,7 +165,7 @@ public class SplashActivity extends AppCompatActivity {
             options.inSampleSize=2;
             int minHeightWidth = 32;
             int imgWidth;
-            float percentage =0.0f;
+            percentage =0.0f;
             String percentString = " %";
             int imgheight;
             float scale;
@@ -177,18 +242,28 @@ public class SplashActivity extends AppCompatActivity {
 //                percentString += percentage ;
 //                percentString += " %";
 //                percent.setText("percentString");
-                progressBar.setProgress(Math.round(percentage));
+
+                publishProgress((int)percentage);
             }
-            return null;
-        }
-
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
             Intent intent = new Intent(SplashActivity.this, MainActivity.class);
             startActivity(intent);
             finish();
+            return null;
         }
+
+         @Override
+         protected void onProgressUpdate(Integer... values) {
+             super.onProgressUpdate(values);
+             String percent_string =  values[0]+" %";
+             percent.setText(percent_string);
+             progressBar.setProgress(values[0]);
+         }
+         //        @Override
+//        protected void onPostExecute(Void aVoid) {
+//            super.onPostExecute(aVoid);
+//            Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+//            startActivity(intent);
+//            finish();
+//        }
     }
 }
