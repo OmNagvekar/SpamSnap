@@ -47,6 +47,7 @@ public class SplashActivity extends AppCompatActivity {
     TextView percent;
     ProgressBar progressBar;
     static float percentage;
+    static boolean wait = false;
 
     private static final int STORAGE_PERMISSION_CODE = 101;
     float counter =0.0f;
@@ -54,6 +55,7 @@ public class SplashActivity extends AppCompatActivity {
     {
         // Checking if permission is not granted
         if (ContextCompat.checkSelfPermission(SplashActivity.this, permission) == PackageManager.PERMISSION_DENIED) {
+            wait=true;
             ActivityCompat.requestPermissions(SplashActivity.this, new String[] { permission }, requestCode);
         }
     }
@@ -105,7 +107,13 @@ public class SplashActivity extends AppCompatActivity {
             checkPermission("android.permission.READ_EXTERNAL_STORAGE",102);
             checkPermission("android.permission.WRITE_EXTERNAL_STORAGE",103);
         }
-
+        if (wait){
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
         allimages = getAllImages();
         size = allimages.size();
 
@@ -141,6 +149,16 @@ public class SplashActivity extends AppCompatActivity {
         }
         return images;
     }
+//    protected void onSaveInstanceState(Bundle outState) {
+//        super.onSaveInstanceState(outState);
+//        outState.putFloat("progress", percentage);
+//    }
+//    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+//        super.onRestoreInstanceState(savedInstanceState);
+//        percentage = savedInstanceState.getFloat("progress");
+//        progressBar.setProgress((int) percentage);
+//        percent.setText((int) percentage + "%");
+//    }
 
      class LoadDataTask extends AsyncTask<Void, Integer, Void> {
 
@@ -149,6 +167,7 @@ public class SplashActivity extends AppCompatActivity {
 //             super.onPreExecute();
 //
 //         }
+//        private Handler mHandler = new Handler(Looper.getMainLooper());
 
          @Override
         protected Void doInBackground(Void... voids) {
@@ -244,6 +263,13 @@ public class SplashActivity extends AppCompatActivity {
 //                percent.setText("percentString");
 
                 publishProgress((int)percentage);
+//                mHandler.post(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        percent.setText(String.format("%.2f",percentage)+"%");
+//                        progressBar.setProgress((int)percentage);
+//                    }
+//                });
             }
             Intent intent = new Intent(SplashActivity.this, MainActivity.class);
             startActivity(intent);
@@ -258,12 +284,7 @@ public class SplashActivity extends AppCompatActivity {
              percent.setText(percent_string);
              progressBar.setProgress(values[0]);
          }
-         //        @Override
-//        protected void onPostExecute(Void aVoid) {
-//            super.onPostExecute(aVoid);
-//            Intent intent = new Intent(SplashActivity.this, MainActivity.class);
-//            startActivity(intent);
-//            finish();
-//        }
+
+
     }
 }
