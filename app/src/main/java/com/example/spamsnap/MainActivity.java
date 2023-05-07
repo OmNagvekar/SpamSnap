@@ -57,16 +57,16 @@ import java.util.Objects;
 public class MainActivity extends AppCompatActivity{
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
+    public static ArrayList<Image> classifiedImages;
     private AlertDialog alertDialog;
     private Menu menu ;
-    public static ArrayList<Image> allimages;
+    public static ArrayList<Image> allimages = new ArrayList<Image>();
     private Uri uri;
     public  static boolean edit=false;
     public static boolean cancel1=false;
     private FloatingActionButton floatingActionButton;
-    private static final int STORAGE_PERMISSION_CODE = 101;
-    int size;
-//    MLthread obj = new MLthread();
+    public static final int STORAGE_PERMISSION_CODE = 101;
+
 
 
     // Function to check and request permission
@@ -80,27 +80,27 @@ public class MainActivity extends AppCompatActivity{
     // This function is called when user accept or decline the permission.
     // Request Code is used to check which permission called this function.
     // This request code is provided when user is prompt for permission.
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String[] permissions,
-                                           @NonNull int[] grantResults)
-    {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        if (requestCode == STORAGE_PERMISSION_CODE) {
-
-            // Checking whether user granted the permission or not.
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                refresh();
-                requestDeletePermission();
-                // Showing the toast message
-                //Toast.makeText(MainActivity.this, "Storage Permission Granted", Toast.LENGTH_SHORT).show();
-            }
-            else {
-                Toast.makeText(MainActivity.this, "Storage Permission Denied", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode,
+//                                           @NonNull String[] permissions,
+//                                           @NonNull int[] grantResults)
+//    {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+//
+//        if (requestCode == STORAGE_PERMISSION_CODE) {
+//
+//            // Checking whether user granted the permission or not.
+//            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+////                refresh();
+//                requestDeletePermission();
+//                // Showing the toast message
+//                //Toast.makeText(MainActivity.this, "Storage Permission Granted", Toast.LENGTH_SHORT).show();
+//            }
+//            else {
+//                Toast.makeText(MainActivity.this, "Storage Permission Denied", Toast.LENGTH_SHORT).show();
+//            }
+//        }
+//    }
 
 
     @Override
@@ -111,14 +111,14 @@ public class MainActivity extends AppCompatActivity{
 //        actionBar.setDisplayShowTitleEnabled(false);
 
 
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
-            // only for android 12 or above
-            checkPermission("android.permission.READ_MEDIA_IMAGES",101);
-            checkPermission("android.permission.MANAGE_EXTERNAL_STORAGE",102);
-        }else{
-            checkPermission("android.permission.READ_EXTERNAL_STORAGE",102);
-            checkPermission("android.permission.WRITE_EXTERNAL_STORAGE",103);
-        }
+//        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
+//            // only for android 12 or above
+//            checkPermission("android.permission.READ_MEDIA_IMAGES",101);
+//            checkPermission("android.permission.MANAGE_EXTERNAL_STORAGE",102);
+//        }else{
+//            checkPermission("android.permission.READ_EXTERNAL_STORAGE",102);
+//            checkPermission("android.permission.WRITE_EXTERNAL_STORAGE",103);
+//        }
 
 
 
@@ -133,15 +133,15 @@ public class MainActivity extends AppCompatActivity{
         progressBar.setVisibility(View.VISIBLE);
 
         //get all images from storage
-        allimages.clear();
-        allimages=getAllImages();
-        size = allimages.size();
+//        allimages.clear();
+//        allimages=getAllImages();
+//        size = allimages.size();
 
 //        ASyncMlThread obj = new ASyncMlThread();
 //        obj.execute();
 
         //set adapter to recylerview
-        recyclerView.setAdapter(new ImageAdapter(this,allimages ));
+        recyclerView.setAdapter(new ImageAdapter(this,classifiedImages ));
         progressBar.setVisibility(View.GONE);
 
 

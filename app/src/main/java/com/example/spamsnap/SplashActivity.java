@@ -1,27 +1,35 @@
 package com.example.spamsnap;
 
+import static com.example.spamsnap.MainActivity.STORAGE_PERMISSION_CODE;
 import static com.example.spamsnap.MainActivity.allimages;
+import static com.example.spamsnap.MainActivity.classifiedImages;
 import static com.example.spamsnap.MainActivity.convertToBlackAndWhite;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.Message;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.util.Log;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -35,28 +43,116 @@ import com.google.mlkit.vision.text.devanagari.DevanagariTextRecognizerOptions;
 import java.util.ArrayList;
 
 public class SplashActivity extends AppCompatActivity {
-//    private ProgressBar mProgressBar;
-//    private TextView percent;
-    float size;
-    float counter =0.0f;
+    private ProgressBar progressBar;
+    protected ProgressUpdater progressUpdater;
+    private TextView percentText;
+    public static float size;
+    public static float percentage;
+    public static boolean permissionflag = true;
+    public static boolean threadRunningflag = false;
+    public static boolean threadInitializer ;
+    public static float counter =0.0f;
+    SharedPreferences sp;
+    public void checkPermission(String permission, int requestCode)
+    {
+        // Checking if permission is not granted
+        if (ContextCompat.checkSelfPermission(SplashActivity.this, permission) == PackageManager.PERMISSION_DENIED) {
+            ActivityCompat.requestPermissions(SplashActivity.this, new String[] { permission }, requestCode);
+            if (ContextCompat.checkSelfPermission(SplashActivity.this, permission) == PackageManager.PERMISSION_GRANTED){
+                permissionflag=true;
+            }
+        }
+
+    }
+    // This function is called when user accept or decline the permission.
+    // Request Code is used to check which permission called this function.
+    // This request code is provided when user is prompt for permission.
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults)
+    {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == STORAGE_PERMISSION_CODE) {
+
+            // Checking whether user granted the permission or not.
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                requestDeletePermission();
+                // Showing the toast message
+                //Toast.makeText(MainActivity.this, "Storage Permission Granted", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                Toast.makeText(SplashActivity.this, "Storage Permission Denied", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        }
+    }
+
+    private void requestDeletePermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+            Uri uri = Uri.fromParts("package", getPackageName(), null);
+            intent.setData(uri);
+            startActivity(intent);
+            recreate();
+        } else {
+            Toast.makeText(SplashActivity.this, "Cannot request delete permission on this device.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d("imagecounter", "onDestroy: Progress "+progressUpdater.getStatus());
+        if (progressUpdater.getStatus()==AsyncTask.Status.RUNNING){
+            progressUpdater.cancel(true);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
+            // only for android 12 or above
+            checkPermission("android.permission.READ_MEDIA_IMAGES",101);
+            checkPermission("android.permission.MANAGE_EXTERNAL_STORAGE",102);
+        }else{
+            checkPermission("android.permission.READ_EXTERNAL_STORAGE",102);
+            checkPermission("android.permission.WRITE_EXTERNAL_STORAGE",103);
+        }
 
-        allimages = getAllImages();
-        size = allimages.size();
+        Log.d("imagecounter", "onCreate: permission "+permissionflag);
+        if (permissionflag){
+            allimages=getAllImages();
+            size=allimages.size();
+            progressBar=findViewById(R.id.progress_bar);
+            sp = getSharedPreferences("ThreadStatus", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sp.edit();
+//            threadRunningflag = sp.getBoolean("Tstatus",false);
 
-//        mProgressBar = findViewById(R.id.progress_bar);
-//        percent = findViewById(R.id.percent);
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                new LoadDataTask().execute();
-            }
-        }).start();
+        if  (!threadRunningflag) {
+            LoadDataTask loadDataTask = new LoadDataTask();
+            Log.w("imagecounter", "onCreate:              " + (threadRunningflag));
+            loadDataTask.execute();
+            threadRunningflag = true;
+            editor.putBoolean("Tstatus",true);
+//            editor.putBoolean("Tinitializer",false);
+            editor.apply();
+        }
+            progressUpdater = new ProgressUpdater();
+            progressUpdater.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+
+        }
 
 
     }
@@ -81,12 +177,54 @@ public class SplashActivity extends AppCompatActivity {
         return images;
     }
 
-     class LoadDataTask extends AsyncTask<Void, Integer, Void> {
-        TextView percent = findViewById(R.id.percent);
-        ProgressBar progressBar = findViewById(R.id.progress_bar);
+
+    public class ProgressUpdater extends AsyncTask<Void,Integer,Void>{
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            percentText.setText(((int)percentage)+" %");
+            super.onProgressUpdate(values);
+        }
 
         @Override
         protected Void doInBackground(Void... voids) {
+            while (counter<=size){
+                progressBar = findViewById(R.id.progress_bar);
+                percentText = findViewById(R.id.percent);
+                try {
+                    Thread.sleep(250);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                Log.d("imagecounter", "doInBackground: progress running,       percentage = "+(counter/size)*100+" %" );
+                percentage = (counter/size)*100;
+                publishProgress((int)percentage);
+                progressBar.setProgress((int) percentage);
+
+            }
+            if (size!=0){
+                finish();
+            }
+
+            return null;
+        }
+    }
+
+
+     class LoadDataTask extends AsyncTask<Void, Integer, Void> {
+
+
+         @Override
+         protected void onPostExecute(Void unused) {
+             super.onPostExecute(unused);
+             SharedPreferences.Editor editor = sp.edit();
+             editor.putBoolean("Tstatus",false);
+         }
+
+         @Override
+        protected Void doInBackground(Void... voids) {
+             counter = 0.0f;
+
             // ML Model testing area
             // English Text Recognizer (optional)
             // TextRecognizer recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
@@ -96,18 +234,19 @@ public class SplashActivity extends AppCompatActivity {
 
             InputImage image ;
 
+
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inSampleSize=2;
             int minHeightWidth = 32;
             int imgWidth;
-            float percentage =0.0f;
-            String percentString = " %";
             int imgheight;
             float scale;
             int newWidth, newHeight;
+
+            classifiedImages = new ArrayList<>();
+
             for (Image img:allimages){
                 counter += 1;
-                percentString = "";
                 try {
                     Thread.sleep(250);
                 } catch (InterruptedException e) {
@@ -119,6 +258,9 @@ public class SplashActivity extends AppCompatActivity {
 
                 // making sure that every image is atleast 32X32 pixels to avoid error from ML Model
                 // -------------- (Scaling the Input image if required) ----------
+                if (bitmap==null){
+                    continue;
+                }
                 imgheight = bitmap.getHeight();
                 imgWidth = bitmap.getWidth();
                 if (imgheight<minHeightWidth || imgWidth<minHeightWidth){
@@ -143,18 +285,25 @@ public class SplashActivity extends AppCompatActivity {
                             for (Text.Line l : tb.getLines()){
 //                                Log.d("ML MODEL", counter+"of "+size+": Text ="+l.getText());
                                 if (l.getText().toLowerCase().contains("morning")) {
+                                    classifiedImages.add(img);
                                     Log.d("ML MODEL", counter+" of "+size+" Text: "+l.getText());
                                 } else if (l.getText().toLowerCase().contains("good morning")){
+                                    classifiedImages.add(img);
                                     Log.d("ML MODEL", counter+" of "+size+" Text: "+l.getText());
                                 } else if (l.getText().contains("शुभ प्रभात")) {
+                                    classifiedImages.add(img);
                                     Log.d("ML MODEL", counter+" of "+size+" Text: "+l.getText());
                                 } else if (l.getText().contains("शुभ")) {
+                                    classifiedImages.add(img);
                                     Log.d("ML MODEL", counter+" of "+size+" Text: "+l.getText());
                                 } else if (l.getText().contains("सकाळ")) {
+                                    classifiedImages.add(img);
                                     Log.d("ML MODEL", counter+" of "+size+" Text: "+l.getText());
                                 } else if (l.getText().contains("शुभ सकाळ")) {
+                                    classifiedImages.add(img);
                                     Log.d("ML MODEL", counter+" of "+size+" Text: "+l.getText());
                                 } else if (l.getText().contains("प्रभात")) {
+                                    classifiedImages.add(img);
                                     Log.d("ML MODEL", counter+" of "+size+" Text: "+l.getText());
                                 } else {
 //                                    Log.d("ML MODEL", counter+"of "+size+"onSuccess: None of the category");
@@ -173,22 +322,19 @@ public class SplashActivity extends AppCompatActivity {
                     }
                 });
 
-                percentage = counter/size*100;
-//                percentString += percentage ;
-//                percentString += " %";
-//                percent.setText("percentString");
-                progressBar.setProgress(Math.round(percentage));
+                percentage = (counter/size)*100.0f;
+
+
             }
-            return null;
-        }
 
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
+            if ((counter==size) && size!=0){
             Intent intent = new Intent(SplashActivity.this, MainActivity.class);
-            startActivity(intent);
-            finish();
+            threadRunningflag = false;
+             startActivity(intent);
+             finish();
+            }
+
+            return null;
         }
     }
 }
