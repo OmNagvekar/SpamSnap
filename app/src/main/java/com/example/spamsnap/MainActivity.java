@@ -27,6 +27,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -56,8 +57,8 @@ import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity{
     private RecyclerView recyclerView;
-    private ProgressBar progressBar;
-    public static ArrayList<Image> classifiedImages;
+    private TextView textView;
+    public static ArrayList<Image> classifiedImages = new ArrayList<Image>();;
     private AlertDialog alertDialog;
     private Menu menu ;
     public static ArrayList<Image> allimages = new ArrayList<Image>();
@@ -70,16 +71,16 @@ public class MainActivity extends AppCompatActivity{
 
 
     // Function to check and request permission
-    public void checkPermission(String permission, int requestCode)
-    {
-        // Checking if permission is not granted
-        if (ContextCompat.checkSelfPermission(MainActivity.this, permission) == PackageManager.PERMISSION_DENIED) {
-            ActivityCompat.requestPermissions(MainActivity.this, new String[] { permission }, requestCode);
-        }
-    }
-    // This function is called when user accept or decline the permission.
-    // Request Code is used to check which permission called this function.
-    // This request code is provided when user is prompt for permission.
+//    public void checkPermission(String permission, int requestCode)
+//    {
+//        // Checking if permission is not granted
+//        if (ContextCompat.checkSelfPermission(MainActivity.this, permission) == PackageManager.PERMISSION_DENIED) {
+//            ActivityCompat.requestPermissions(MainActivity.this, new String[] { permission }, requestCode);
+//        }
+//    }
+//    // This function is called when user accept or decline the permission.
+//    // Request Code is used to check which permission called this function.
+//    // This request code is provided when user is prompt for permission.
 //    @Override
 //    public void onRequestPermissionsResult(int requestCode,
 //                                           @NonNull String[] permissions,
@@ -104,6 +105,12 @@ public class MainActivity extends AppCompatActivity{
 
 
     @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -111,38 +118,20 @@ public class MainActivity extends AppCompatActivity{
 //        actionBar.setDisplayShowTitleEnabled(false);
 
 
-//        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
-//            // only for android 12 or above
-//            checkPermission("android.permission.READ_MEDIA_IMAGES",101);
-//            checkPermission("android.permission.MANAGE_EXTERNAL_STORAGE",102);
-//        }else{
-//            checkPermission("android.permission.READ_EXTERNAL_STORAGE",102);
-//            checkPermission("android.permission.WRITE_EXTERNAL_STORAGE",103);
-//        }
-
-
-
+        textView=findViewById(R.id.textView);
         recyclerView=(RecyclerView) findViewById(R.id.image_recylerview);
-        progressBar=(ProgressBar) findViewById(R.id.progressBar);
         GridLayoutManager layoutManager = new GridLayoutManager(this,3);
-
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
         allimages=new ArrayList<>();
 
-        progressBar.setVisibility(View.VISIBLE);
-
-        //get all images from storage
-//        allimages.clear();
-//        allimages=getAllImages();
-//        size = allimages.size();
-
-//        ASyncMlThread obj = new ASyncMlThread();
-//        obj.execute();
-
-        //set adapter to recylerview
-        recyclerView.setAdapter(new ImageAdapter(this,classifiedImages ));
-        progressBar.setVisibility(View.GONE);
+        if (classifiedImages.size()==0){
+            textView.setVisibility(View.VISIBLE);
+        }else {
+            textView.setVisibility(View.INVISIBLE);
+            //set adapter to recylerview
+            recyclerView.setAdapter(new ImageAdapter(this,classifiedImages ));
+        }
 
 
     }
@@ -178,7 +167,6 @@ public class MainActivity extends AppCompatActivity{
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         MenuItem editItem = menu.findItem(R.id.edit);
-//        MenuItem selectImage = menu.findItem(R.id.text);
         MenuItem cancel = menu.findItem(R.id.cancel_button);
         MenuItem refresh = menu.findItem(R.id.refresh);
         floatingActionButton = findViewById(R.id.floatingActionButton);
@@ -249,11 +237,7 @@ public class MainActivity extends AppCompatActivity{
         }
     }
     public void refresh(){
-        progressBar.setVisibility(View.VISIBLE);
-        allimages.clear();
-        allimages= getAllImages();
-        recyclerView.setAdapter(new ImageAdapter(this,allimages));
-        progressBar.setVisibility(View.GONE);
+        recyclerView.setAdapter(new ImageAdapter(this,classifiedImages));
     }
     private void requestDeletePermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -289,23 +273,25 @@ public class MainActivity extends AppCompatActivity{
                 boolean deleted;
 
                 // Android lower than 12 deletion code
-                if (Build.VERSION.SDK_INT<=Build.VERSION_CODES.R){
+                if (Build.VERSION.SDK_INT<Build.VERSION_CODES.R){
                     ContentResolver contentResolver = MainActivity.this.getContentResolver();
                     Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
                     String selection = MediaStore.Images.Media.DATA + "=?";
                     String[] selectionArgs;
 
 
-                    for (String path:ImageAdapter.deleteImages){
-                        f = new File(path);
+                    for (Image image:ImageAdapter.deleteImages){
+                        f = new File(image.imagepath);
                         deleted = f.delete();
                         if (deleted){
-                            selectionArgs = new String[] { path };
+                            selectionArgs = new String[] { image.imagepath };
                             // deletes the path of deleted image from Media Store
                             contentResolver.delete(uri, selection, selectionArgs);
 
                             alertDialog.dismiss();
-
+                            classifiedImages.remove(image);
+                            SplashActivity.editor.remove(image.imagepath);
+                            SplashActivity.editor.apply();
                             ((MainActivity)view.getContext()).recreate();
 
 
@@ -320,14 +306,20 @@ public class MainActivity extends AppCompatActivity{
 
                 }
                 else{
-                    for (String path:ImageAdapter.deleteImages){
-                        f =  new File(path);
+                    for (Image image:ImageAdapter.deleteImages){
+                        f =  new File(image.imagepath);
                         deleted = f.delete();
+                        if (deleted){
+                            classifiedImages.remove(image);
+                            SplashActivity.editor.remove(image.imagepath);
+                            SplashActivity.editor.apply();
+                        }
 
                     }
                     Toast.makeText(MainActivity.this,"Deleted",Toast.LENGTH_SHORT).show();
 
                     alertDialog.dismiss();
+                    ImageAdapter.deleteImages.clear();
                     ((MainActivity)view.getContext()).recreate();//recreate is used to recreate activity
                 }
 
@@ -345,96 +337,5 @@ public class MainActivity extends AppCompatActivity{
         canvas.drawBitmap(originalBitmap, 0, 0, paint);
         return blackAndWhiteBitmap;
     }
-
-//    class ASyncMlThread extends AsyncTask<Void, Void,Void>{
-//        int counter = 0;
-
-//        @Override
-//        protected Void doInBackground(Void... voids) {
-//            // ML Model testing area
-//            // English Text Recognizer (optional)
-//            // TextRecognizer recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
-//
-//            // Marathi (Devanagari) Text Recognizer (Required )
-//            TextRecognizer recognizer = TextRecognition.getClient(new DevanagariTextRecognizerOptions.Builder().build());
-//
-//            InputImage image ;
-//
-//            BitmapFactory.Options options = new BitmapFactory.Options();
-//            options.inSampleSize=2;
-//            int minHeightWidth = 32;
-//            int imgWidth;
-//            int imgheight;
-//            float scale;
-//            int newWidth, newHeight;
-//            for (Image img:allimages){
-//                counter += 1;
-//                try {
-//                    Thread.sleep(250);
-//                } catch (InterruptedException e) {
-//                    throw new RuntimeException(e);
-//                }
-//                // Loads all images
-//                Log.d("imagecounter", counter+" of "+size+": Image name  -->  "+img.imagename);
-//                Bitmap bitmap = BitmapFactory.decodeFile(img.imagepath,options);
-//
-//                // making sure that every image is atleast 32X32 pixels to avoid error from ML Model
-//                // -------------- (Scaling the Input image if required) ----------
-//                imgheight = bitmap.getHeight();
-//                imgWidth = bitmap.getWidth();
-//                if (imgheight<minHeightWidth || imgWidth<minHeightWidth){
-//                    scale = Math.max((float) minHeightWidth/imgWidth,(float) minHeightWidth/imgheight);
-//                    newWidth = Math.round(imgWidth * scale);
-//                    newHeight = Math.round(imgheight * scale);
-//                    bitmap = Bitmap.createScaledBitmap(bitmap,newWidth,newHeight,true);
-//                }
-//
-//                image = InputImage.fromBitmap(convertToBlackAndWhite(bitmap),0);
-//
-//                // passing all images to ML Model
-//                Task<Text> result = recognizer.process(image).addOnSuccessListener(new OnSuccessListener<Text>() {
-//                    @Override
-//                    public void onSuccess(Text text) {
-//                        // task completed
-//                        if (text.getTextBlocks().isEmpty()){
-////                            Log.d("ML MODEL", counter+"of "+size+": NO text found");
-//                            return;
-//                        }
-//                        for (Text.TextBlock tb: text.getTextBlocks()){
-//                            for (Text.Line l : tb.getLines()){
-////                                Log.d("ML MODEL", counter+"of "+size+": Text ="+l.getText());
-//                                if (l.getText().toLowerCase().contains("morning")) {
-//                                    Log.d("ML MODEL", counter+" of "+size+" Text: "+l.getText());
-//                                } else if (l.getText().toLowerCase().contains("good morning")){
-//                                    Log.d("ML MODEL", counter+" of "+size+" Text: "+l.getText());
-//                                } else if (l.getText().contains("शुभ प्रभात")) {
-//                                    Log.d("ML MODEL", counter+" of "+size+" Text: "+l.getText());
-//                                } else if (l.getText().contains("शुभ")) {
-//                                    Log.d("ML MODEL", counter+" of "+size+" Text: "+l.getText());
-//                                } else if (l.getText().contains("सकाळ")) {
-//                                    Log.d("ML MODEL", counter+" of "+size+" Text: "+l.getText());
-//                                } else if (l.getText().contains("शुभ सकाळ")) {
-//                                    Log.d("ML MODEL", counter+" of "+size+" Text: "+l.getText());
-//                                } else if (l.getText().contains("प्रभात")) {
-//                                    Log.d("ML MODEL", counter+" of "+size+" Text: "+l.getText());
-//                                } else {
-////                                    Log.d("ML MODEL", counter+"of "+size+"onSuccess: None of the category");
-//                                }
-//                            }
-//                        }
-//
-//
-//                    }
-//                }).addOnFailureListener(new OnFailureListener() {
-//                    @Override
-//                    public void onFailure(@NonNull Exception e) {
-//                        // Task failed with exception
-//
-//                        Log.e("ML MODEL", "onFailure: "+e);
-//                    }
-//                });
-//            }
-//            return null;
-//        }
 
 }

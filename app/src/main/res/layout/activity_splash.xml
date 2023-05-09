@@ -21,18 +21,17 @@
     <TextView
         android:id="@+id/editTextTextMultiLine"
         style="@style/Widget.AppCompat.TextView"
-        android:layout_width="334dp"
-        android:layout_height="39dp"
-        android:text="Please wait until all your images are scanned"
-        android:textColor="@color/purple_500"
+        android:layout_width="335dp"
+        android:layout_height="71dp"
+        android:text="Please wait until all your images are scanned\n\nNote: This takes longer only for first time"
+        android:textColor="#FF5722"
         android:visibility="visible"
         app:autoSizeTextType="uniform"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.485"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.718" />
+        app:layout_constraintVertical_bias="0.763" />
 
     <TextView
         android:id="@+id/percent"
