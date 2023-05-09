@@ -77,13 +77,6 @@ public class SplashActivity extends AppCompatActivity {
 
             // Checking whether user granted the permission or not.
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                if (Build.VERSION.SDK_INT>Build.VERSION_CODES.Q){
-                    permissionflag=true;
-                    requestDeletePermission();
-
-                }
-                // Showing the toast message
-                //Toast.makeText(MainActivity.this, "Storage Permission Granted", Toast.LENGTH_SHORT).show();
             }
             else {
                 Toast.makeText(SplashActivity.this, "Storage Permission Denied", Toast.LENGTH_SHORT).show();
@@ -93,21 +86,28 @@ public class SplashActivity extends AppCompatActivity {
     }
 
 
-    private void requestDeletePermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
-            Uri uri = Uri.fromParts("package", getPackageName(), null);
-            intent.setData(uri);
-            startActivity(intent);
-        } else {
-            Toast.makeText(SplashActivity.this, "Cannot request delete permission on this device.", Toast.LENGTH_SHORT).show();
-        }
-    }
+//    private void requestDeletePermission() {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+//            Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+//            Uri uri = Uri.fromParts("package", getPackageName(), null);
+//            intent.setData(uri);
+//            startActivity(intent);
+//        } else {
+//            Toast.makeText(SplashActivity.this, "Cannot request delete permission on this device.", Toast.LENGTH_SHORT).show();
+//        }
+//    }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d("imagecounter", "onDestroy: Progress "+progressUpdater.getStatus());
+        if (progressUpdater.getStatus()==AsyncTask.Status.RUNNING){
+            progressUpdater.cancel(true);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
         if (progressUpdater.getStatus()==AsyncTask.Status.RUNNING){
             progressUpdater.cancel(true);
         }
@@ -122,20 +122,15 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_splash);
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
             // only for android 11 and above
-            checkPermission("android.permission.READ_MEDIA_IMAGES",101);
             if (Environment.isExternalStorageManager()){
                 permissionflag=true;
             }else {
-                requestDeletePermission();
+                Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+                Uri uri = Uri.fromParts("package", getPackageName(), null);
+                intent.setData(uri);
+                startActivityForResult(intent, 100);
             }
         }else{
             checkPermission("android.permission.READ_EXTERNAL_STORAGE",103);
@@ -155,14 +150,6 @@ public class SplashActivity extends AppCompatActivity {
             sp = getSharedPreferences("AllImages", Context.MODE_PRIVATE);
             editor = sp.edit();
 
-//        if  (!threadRunningflag) {
-//            LoadDataTask loadDataTask = new LoadDataTask();
-//            Log.w("imagecounter", "onCreate:       thread running  " + (threadRunningflag));
-//            loadDataTask.execute();
-//            threadRunningflag = true;
-//        }
-//            progressUpdater = new ProgressUpdater();
-//            progressUpdater.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         }
         Log.d("imagecounter", "onResume: permission "+permissionflag+" , threadrunning "+threadRunningflag);
@@ -175,48 +162,16 @@ public class SplashActivity extends AppCompatActivity {
         }
         progressUpdater = new ProgressUpdater();
         progressUpdater.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-//        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
-//            // only for android 11 and above
-//            checkPermission("android.permission.READ_MEDIA_IMAGES",101);
-//            if (ActivityCompat.checkSelfPermission(this,"android.permission.READ_MEDIA_IMAGES")==PackageManager.PERMISSION_GRANTED) {
-//                permissionflag=true;
-//            }
-//            else {
-//                    permissionflag=false;
-//                }
-//        }else{
-//            checkPermission("android.permission.READ_EXTERNAL_STORAGE",103);
-//            checkPermission("android.permission.WRITE_EXTERNAL_STORAGE",104);
-//            if (ActivityCompat.checkSelfPermission(this,"android.permission.READ_EXTERNAL_STORAGE")==PackageManager.PERMISSION_GRANTED){
-//                if (ActivityCompat.checkSelfPermission(this,"android.permission.WRITE_EXTERNAL_STORAGE")==PackageManager.PERMISSION_GRANTED){
-//                    permissionflag = true;
-//                }else {
-//                    permissionflag=false;
-//                }
-//            }
-//        }
-//
-//        Log.d("imagecounter", "onCreate: permission "+permissionflag);
-//        if (permissionflag){
-//            allimages=getAllImages();
-//            size=allimages.size();
-//            progressBar=findViewById(R.id.progress_bar);
-//            sp = getSharedPreferences("AllImages", Context.MODE_PRIVATE);
-//            editor = sp.edit();
-//
-////        if  (!threadRunningflag) {
-////            LoadDataTask loadDataTask = new LoadDataTask();
-////            Log.w("imagecounter", "onCreate:       thread running  " + (threadRunningflag));
-////            loadDataTask.execute();
-////            threadRunningflag = true;
-////        }
-////            progressUpdater = new ProgressUpdater();
-////            progressUpdater.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-//
-//        }
+    }
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_splash);
 
     }
+
+
     public ArrayList<Image> getAllImages() {
         ArrayList<Image> images = new ArrayList<Image>();
         Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
@@ -257,7 +212,7 @@ public class SplashActivity extends AppCompatActivity {
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-//                Log.d("imagecounter", "doInBackground: progress running,       percentage = "+(counter/size)*100+" %" );
+                Log.d("imagecounter", "doInBackground: progress running,       percentage = "+(counter/size)*100+" %" );
                 percentage = (counter/size)*100;
                 publishProgress((int)percentage);
                 progressBar.setProgress((int) percentage);
@@ -278,7 +233,7 @@ public class SplashActivity extends AppCompatActivity {
          @Override
         protected Void doInBackground(Void... voids) {
              counter = 0.0f;
-            // ML Model testing area
+//             ML Model Code
             // English Text Recognizer (optional)
             // TextRecognizer recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
 
@@ -353,7 +308,6 @@ public class SplashActivity extends AppCompatActivity {
                         }
                         for (Text.TextBlock tb: text.getTextBlocks()){
                             for (Text.Line l : tb.getLines()){
-//                                Log.d("ML MODEL", counter+"of "+size+": Text ="+l.getText());
                                 if (l.getText().toLowerCase().contains("morning")) {
                                     classifiedImages.add(img);
                                     editor.putInt(img.imagepath,1);
