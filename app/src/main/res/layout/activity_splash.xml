@@ -17,37 +17,20 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.21" />
 
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-        android:layout_width="217dp"
-        android:layout_height="16dp"
-        android:layout_below="@+id/logo"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="148dp"
-        android:indeterminateTint="@color/black"
-        android:progressTint="@color/orange"
-        app:layout_constraintBottom_toTopOf="@+id/editTextTextMultiLine"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/percent"
-        app:layout_constraintVertical_bias="0.041" />
-
     <TextView
         android:id="@+id/editTextTextMultiLine"
         style="@style/Widget.AppCompat.TextView"
-        android:layout_width="334dp"
-        android:layout_height="39dp"
-        android:text="Please wait until all your images are scanned"
-        android:textColor="@color/black"
+        android:layout_width="335dp"
+        android:layout_height="71dp"
+        android:text="Please wait until all your images are scanned\n\nNote: This takes longer only for first time"
+        android:textColor="#FF5722"
         android:visibility="visible"
         app:autoSizeTextType="uniform"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.485"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.718" />
+        app:layout_constraintVertical_bias="0.763" />
 
     <TextView
         android:id="@+id/percent"
@@ -64,5 +47,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/logo"
         app:layout_constraintVertical_bias="0.0" />
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="232dp"
+        android:layout_height="19dp"
+        android:progressTint="@color/orange"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
