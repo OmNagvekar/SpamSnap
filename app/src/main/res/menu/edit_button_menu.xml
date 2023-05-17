@@ -15,6 +15,11 @@
         android:id="@+id/cancel_button"
         android:title="@string/cancel"
         app:showAsAction="always"
-        android:visible="false"/>
+        android:visible="false"/>"
+    <item
+        android:id="@+id/settings"
+        app:showAsAction="never"
+        android:orderInCategory="100"
+        android:title="Setting"/>
 
 </menu>

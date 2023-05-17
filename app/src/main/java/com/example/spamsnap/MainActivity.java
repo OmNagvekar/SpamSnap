@@ -196,6 +196,11 @@ public class MainActivity extends AppCompatActivity{
                 refresh();
                 Toast.makeText(this, "Refreshing ....", Toast.LENGTH_SHORT).show();
                 return true;
+            case R.id.settings:
+                Intent intent1= new Intent(MainActivity.this,SettingActivity.class);
+                startActivity(intent1);
+                finish();
+
             default:
                 return super.onOptionsItemSelected(item);
         }

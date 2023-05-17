@@ -34,8 +34,8 @@
 
     <TextView
         android:id="@+id/percent"
-        android:layout_width="101dp"
-        android:layout_height="27dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="76dp"
         android:text="0%"
         android:textAlignment="center"
