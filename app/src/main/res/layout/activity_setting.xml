@@ -19,53 +19,55 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.151" />
+        app:layout_constraintVertical_bias="0.161" />
 
     <Switch
         android:id="@+id/switch1"
         android:layout_width="98dp"
         android:layout_height="48dp"
-        android:layout_marginTop="120dp"
-        android:layout_marginBottom="10dp"
-        android:text="Turn On"
-        android:textOn="Turn Off"
-        app:layout_constraintBottom_toTopOf="@+id/cardView"
+        android:layout_marginTop="104dp"
+        app:layout_constraintBottom_toTopOf="@+id/spinner"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.139"
+        app:layout_constraintHorizontal_bias="0.169"
         app:layout_constraintStart_toEndOf="@+id/autodelete"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0"
+        app:layout_constraintVertical_bias="0.0"
         tools:ignore="UseSwitchCompatOrMaterialXml" />
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_width="325dp"
+        android:layout_height="41dp"
+        android:background="@drawable/effect1"
+        android:textColor="@android:color/black"
+        app:layout_constraintBottom_toTopOf="@+id/divider3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.372"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/autodelete"
+        app:layout_constraintVertical_bias="0.385" />
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="409dp"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.254">
+        app:layout_constraintVertical_bias="0.123" />
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_margin="10dp"
-            android:orientation="vertical">
-
-            <RadioButton
-                android:id="@+id/sevenday"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:text="7 Days" />
-
-            <RadioButton
-                android:id="@+id/thirtyday"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:text="30 Days" />
-        </LinearLayout>
-
-    </androidx.cardview.widget.CardView>
+    <View
+        android:id="@+id/divider3"
+        android:layout_width="409dp"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.367" />
 </androidx.constraintlayout.widget.ConstraintLayout>
