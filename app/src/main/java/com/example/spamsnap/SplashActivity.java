@@ -254,7 +254,7 @@ public class SplashActivity extends AppCompatActivity {
                 // Optimization part
                 if ((sp.getInt(img.imagepath,0)==1) || (sp.getInt(img.imagepath,0)==-1)){
                     try {
-                        Thread.sleep(10);
+                        Thread.sleep(1);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }

@@ -67,6 +67,7 @@ public class SettingActivity extends AppCompatActivity {
         if(aswitch==true){
             aSwitch.setChecked(aswitch);
             index=sp1.getInt("index",2);
+            day=sp1.getInt("day",1);
             spinner.setVisibility(View.VISIBLE);
             spinner.setSelection(index);
             startDeleteImagesService();
@@ -92,34 +93,41 @@ public class SettingActivity extends AppCompatActivity {
                             String selectedOptions = parent.getItemAtPosition(position).toString();
                             if (selectedOptions.equals(array[0])){
                                 index=0;
-                                editor1.putInt("index",index);
-                                editor1.apply();
                                 day=7;
+                                editor1.putInt("index",index);
+                                editor1.putInt("day",day);
+                                editor1.apply();
                                 startDeleteImagesService();
                                 DeleteImagesService deleteImagesService =  new DeleteImagesService();
                                 deleteImagesService.mRunnable.run();
                             } else if (selectedOptions.equals(array[1])) {
                                 index=1;
-                                editor1.putInt("index",index);
-                                editor1.apply();
                                 day=30;
+                                editor1.putInt("index",index);
+                                editor1.putInt("day",day);
+                                editor1.apply();
+
                                 startDeleteImagesService();
                                 DeleteImagesService deleteImagesService =  new DeleteImagesService();
                                 deleteImagesService.mRunnable.run();
                             }else if (selectedOptions.equals(array[2])){
                                 index=2;
-                                editor1.putInt("index",index);
-                                editor1.apply();
                                 day=1;
+                                editor1.putInt("index",index);
+                                editor1.putInt("day",day);
+                                editor1.apply();
+
                                 startDeleteImagesService();
                                 DeleteImagesService deleteImagesService =  new DeleteImagesService();
                                 deleteImagesService.mRunnable.run();
                             }
                             else {
                                 index=2;
-                                editor1.putInt("index",index);
-                                editor1.apply();
                                 day=1;
+                                editor1.putInt("index",index);
+                                editor1.putInt("day",day);
+                                editor1.apply();
+
                                 startDeleteImagesService();
                                 DeleteImagesService deleteImagesService =  new DeleteImagesService();
                                 deleteImagesService.mRunnable.run();
