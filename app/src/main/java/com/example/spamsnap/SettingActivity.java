@@ -7,7 +7,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -29,6 +31,8 @@ public class SettingActivity extends AppCompatActivity {
     Switch aSwitch;
     CardView cardView;
     RadioButton sevenday,thirtyday;
+    public  static  boolean aswitch=false;
+    public  static int index=0;
     static  int day =1;
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -36,6 +40,7 @@ public class SettingActivity extends AppCompatActivity {
             Intent intent = new Intent(this, MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
+            finish();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -55,36 +60,65 @@ public class SettingActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(R.layout.spinner_item);
         spinner.setAdapter(adapter);
         spinner.setVisibility(View.INVISIBLE);
-//        cardView = findViewById(R.id.cardView);
-//        sevenday = findViewById(R.id.sevenday);
-//        thirtyday = findViewById(R.id.thirtyday);
-//        cardView.setVisibility(View.GONE);
+        SharedPreferences.Editor editor1;
+        SharedPreferences sp1 = getSharedPreferences("Settings", Context.MODE_PRIVATE);
+        editor1=sp1.edit();
+        aswitch=sp1.getBoolean("switch",false);
+        if(aswitch==true){
+            aSwitch.setChecked(aswitch);
+            index=sp1.getInt("index",2);
+            spinner.setVisibility(View.VISIBLE);
+            spinner.setSelection(index);
+            startDeleteImagesService();
+            DeleteImagesService deleteImagesService =  new DeleteImagesService();
+            deleteImagesService.mRunnable.run();
+        }else {
+            stopService(new Intent(getApplicationContext(), DeleteImagesService.class));
+            DeleteImagesService deleteImagesService = new DeleteImagesService();
+            deleteImagesService.mHandler.removeCallbacks(deleteImagesService.mRunnable);
+            spinner.setVisibility(View.INVISIBLE);
+        }
         aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked){
                     spinner.setVisibility(View.VISIBLE);
+                    aswitch=true;
+                    editor1.putBoolean("switch",aswitch);
+                    editor1.apply();
                     spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                         @Override
                         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                             String selectedOptions = parent.getItemAtPosition(position).toString();
                             if (selectedOptions.equals(array[0])){
+                                index=0;
+                                editor1.putInt("index",index);
+                                editor1.apply();
                                 day=7;
                                 startDeleteImagesService();
                                 DeleteImagesService deleteImagesService =  new DeleteImagesService();
                                 deleteImagesService.mRunnable.run();
                             } else if (selectedOptions.equals(array[1])) {
+                                index=1;
+                                editor1.putInt("index",index);
+                                editor1.apply();
                                 day=30;
                                 startDeleteImagesService();
                                 DeleteImagesService deleteImagesService =  new DeleteImagesService();
                                 deleteImagesService.mRunnable.run();
                             }else if (selectedOptions.equals(array[2])){
+                                index=2;
+                                editor1.putInt("index",index);
+                                editor1.apply();
                                 day=1;
                                 startDeleteImagesService();
                                 DeleteImagesService deleteImagesService =  new DeleteImagesService();
                                 deleteImagesService.mRunnable.run();
                             }
                             else {
+                                index=2;
+                                editor1.putInt("index",index);
+                                editor1.apply();
                                 day=1;
                                 startDeleteImagesService();
                                 DeleteImagesService deleteImagesService =  new DeleteImagesService();
@@ -94,7 +128,8 @@ public class SettingActivity extends AppCompatActivity {
 
                         @Override
                         public void onNothingSelected(AdapterView<?> parent) {
-
+//                            index=sp1.getInt("index",2);
+//                            spinner.setSelection(index);
                         }
                     });
 
@@ -108,6 +143,9 @@ public class SettingActivity extends AppCompatActivity {
                     DeleteImagesService deleteImagesService = new DeleteImagesService();
                     deleteImagesService.mHandler.removeCallbacks(deleteImagesService.mRunnable);
                     spinner.setVisibility(View.INVISIBLE);
+                    aswitch=false;
+                    editor1.putBoolean("switch", false);
+                    editor1.apply();
                 }
             }
         });
