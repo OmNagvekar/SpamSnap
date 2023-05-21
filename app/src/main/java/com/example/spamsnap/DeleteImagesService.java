@@ -59,7 +59,9 @@ public class DeleteImagesService extends Service {
             if (dir.lastModified() < cutoff) {
                 boolean delete=dir.delete();
                 Log.d("Delete","Deleted Image is:"+image.imagename+"and "+delete);
-                ImageToRemove.add((image));
+                if(delete==true){
+                    ImageToRemove.add((image));
+                }
             }
         }
         classifiedImages.removeAll(ImageToRemove);
