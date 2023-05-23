@@ -33,7 +33,7 @@ public class SettingActivity extends AppCompatActivity {
     RadioButton sevenday,thirtyday;
     public  static  boolean aswitch=false;
     public  static int index=0;
-    static  int day =1;
+    public static  int day =0;
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
@@ -63,11 +63,11 @@ public class SettingActivity extends AppCompatActivity {
         SharedPreferences.Editor editor1;
         SharedPreferences sp1 = getSharedPreferences("Settings", Context.MODE_PRIVATE);
         editor1=sp1.edit();
+        day=sp1.getInt("day",1);
         aswitch=sp1.getBoolean("switch",false);
         if(aswitch==true){
             aSwitch.setChecked(aswitch);
             index=sp1.getInt("index",2);
-            day=sp1.getInt("day",1);
             spinner.setVisibility(View.VISIBLE);
             spinner.setSelection(index);
             startDeleteImagesService();
