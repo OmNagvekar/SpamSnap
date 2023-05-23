@@ -334,6 +334,26 @@ public class SplashActivity extends AppCompatActivity {
                                     editor.putInt(img.imagepath,1);
                                     editor.apply();
                                     Log.d("ML MODEL", counter+" of "+size+" Text: "+l.getText());
+                                } else if (l.getText().contains("Good night")) {
+                                    classifiedImages.add(img);
+                                    editor.putInt(img.imagepath,1);
+                                    editor.apply();
+                                    Log.d("ML MODEL", counter+" of "+size+" Text: "+l.getText());
+                                } else if (l.getText().contains("रात्र")) {
+                                    classifiedImages.add(img);
+                                    editor.putInt(img.imagepath,1);
+                                    editor.apply();
+                                    Log.d("ML MODEL", counter+" of "+size+" Text: "+l.getText());
+                                }else if (l.getText().contains("शुभ रात्र")){
+                                    classifiedImages.add(img);
+                                    editor.putInt(img.imagepath,1);
+                                    editor.apply();
+                                    Log.d("ML MODEL", counter+" of "+size+" Text: "+l.getText());
+                                } else if (l.getText().contains("night")) {
+                                    classifiedImages.add(img);
+                                    editor.putInt(img.imagepath,1);
+                                    editor.apply();
+                                    Log.d("ML MODEL", counter+" of "+size+" Text: "+l.getText());
                                 } else {
                                     editor.putInt(img.imagepath,-1);
                                     editor.apply();
