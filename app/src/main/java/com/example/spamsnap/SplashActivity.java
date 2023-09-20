@@ -377,6 +377,7 @@ public class SplashActivity extends AppCompatActivity {
 
             }
 
+            
             if ((counter==size) && size!=0){
                 Intent intent = new Intent(SplashActivity.this, MainActivity.class);
                 editor.apply();
