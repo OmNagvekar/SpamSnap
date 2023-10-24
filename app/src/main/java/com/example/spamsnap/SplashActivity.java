@@ -28,7 +28,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.example.spamsnap.Image;
+import com.chaquo.python.PyObject;
+import com.chaquo.python.Python;
+import com.chaquo.python.android.AndroidPlatform;
+import com.example.spamsnap.ml.SpamsnapModelEnglish;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -38,6 +41,12 @@ import com.google.mlkit.vision.text.TextRecognition;
 import com.google.mlkit.vision.text.TextRecognizer;
 import com.google.mlkit.vision.text.devanagari.DevanagariTextRecognizerOptions;
 
+import org.tensorflow.lite.DataType;
+import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
+
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 
 public class SplashActivity extends AppCompatActivity {
@@ -302,66 +311,62 @@ public class SplashActivity extends AppCompatActivity {
                             editor.apply();
                             return;
                         }
-                        for (Text.TextBlock tb: text.getTextBlocks()){
-                            for (Text.Line l : tb.getLines()){
-                                if (l.getText().toLowerCase().contains("morning")) {
-                                    classifiedImages.add(img);
-                                    editor.putInt(img.imagepath,1);
-                                    editor.apply();
-                                    Log.d("ML MODEL", counter+" of "+size+" Text: "+l.getText());
-                                } else if (l.getText().toLowerCase().contains("good morning")){
-                                    classifiedImages.add(img);
-                                    editor.putInt(img.imagepath,1);
-                                    editor.apply();
-                                    Log.d("ML MODEL", counter+" of "+size+" Text: "+l.getText());
-                                } else if (l.getText().contains("शुभ प्रभात")) {
-                                    classifiedImages.add(img);
-                                    editor.putInt(img.imagepath,1);
-                                    editor.apply();
-                                    Log.d("ML MODEL", counter+" of "+size+" Text: "+l.getText());
-                                } else if (l.getText().contains("सकाळ")) {
-                                    classifiedImages.add(img);
-                                    editor.putInt(img.imagepath,1);
-                                    editor.apply();
-                                    Log.d("ML MODEL", counter+" of "+size+" Text: "+l.getText());
-                                } else if (l.getText().contains("शुभ सकाळ")) {
-                                    classifiedImages.add(img);
-                                    editor.putInt(img.imagepath,1);
-                                    editor.apply();
-                                    Log.d("ML MODEL", counter+" of "+size+" Text: "+l.getText());
-                                } else if (l.getText().contains("प्रभात")) {
-                                    classifiedImages.add(img);
-                                    editor.putInt(img.imagepath,1);
-                                    editor.apply();
-                                    Log.d("ML MODEL", counter+" of "+size+" Text: "+l.getText());
-                                } else if (l.getText().contains("Good night")) {
-                                    classifiedImages.add(img);
-                                    editor.putInt(img.imagepath,1);
-                                    editor.apply();
-                                    Log.d("ML MODEL", counter+" of "+size+" Text: "+l.getText());
-                                } else if (l.getText().contains("रात्र")) {
-                                    classifiedImages.add(img);
-                                    editor.putInt(img.imagepath,1);
-                                    editor.apply();
-                                    Log.d("ML MODEL", counter+" of "+size+" Text: "+l.getText());
-                                }else if (l.getText().contains("शुभ रात्र")){
-                                    classifiedImages.add(img);
-                                    editor.putInt(img.imagepath,1);
-                                    editor.apply();
-                                    Log.d("ML MODEL", counter+" of "+size+" Text: "+l.getText());
-                                } else if (l.getText().contains("night")) {
-                                    classifiedImages.add(img);
-                                    editor.putInt(img.imagepath,1);
-                                    editor.apply();
-                                    Log.d("ML MODEL", counter+" of "+size+" Text: "+l.getText());
-                                } else {
-                                    editor.putInt(img.imagepath,-1);
-                                    editor.apply();
+                        //Log.d("IMAGE0 ","Text in image full line: "+text.getText().toLowerCase()+" Image Name:"+img.imagename);//this gets all text from image
+                        //for (Text.TextBlock tb: text.getTextBlocks()){
+                        //Log.d("IMAGE", "Text in image full line: "+tb.getText().toLowerCase()+" Image Name:"+img.imagename); //this gets only some 2lines text block
+                        //for (Text.Line l : tb.getLines()){
+                        //Log.d("IMAGE2", "Text in image full line: "+l.getText().toLowerCase()+" Image Name:"+img.imagename);// this only gets one line at a time
+                        try {
+                            SpamsnapModelEnglish model = SpamsnapModelEnglish.newInstance(SplashActivity.this);
+
+                            // Creates inputs for reference.
+                            TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 272}, DataType.FLOAT32);
+                            if (! Python.isStarted()) {
+                                Python.start(new AndroidPlatform(SplashActivity.this));
+                            }
+                            Python py = Python.getInstance();
+                            PyObject module =  py.getModule("TextProcessing");
+                            PyObject englishText = module.get("english");
+                            if (englishText != null ) {
+                                PyObject result = englishText.call(text.getText().toLowerCase());
+                                float[] floatData = result.toJava(float[].class);
+                                if(floatData.length==272){
+                                    for(int i= 0;i<272 ;i++){
+                                        inputFeature0.getFloatArray()[i]=floatData[i];
+                                    }
                                 }
                             }
+                            // Runs model inference and gets result.
+                            SpamsnapModelEnglish.Outputs outputs = model.process(inputFeature0);
+                            TensorBuffer outputFeature0 = outputs.getOutputFeature0AsTensorBuffer();
+                            Log.d("Result ML", "onSuccess: "+ outputFeature0);
+                            if (outputFeature0.getDataType() == DataType.FLOAT32) {
+                                PyObject final_result_function = module.get("Result");
+                                float[] floatArray = outputFeature0.getFloatArray();
+                                PyObject final_result = final_result_function.call((Object) floatArray);
+                                Log.d("Result ML", "Result: "+ final_result.toInt());
+                                if (final_result.toInt()==0) {
+                                    //spam image
+                                    classifiedImages.add(img);
+                                    editor.putInt(img.imagepath,1);
+                                    editor.apply();
+                                    Log.d("ML MODEL", counter+" of "+size+" Text: "+text.getText().toLowerCase());
+                                } else if (final_result.toInt()==1){
+                                    //ham image
+                                    editor.putInt(img.imagepath,-1);
+                                    editor.apply();
+                                    Log.d("ML MODEL", counter+" of "+size+" Text: "+text.getText().toLowerCase());
+                                }
+                            }
+
+                            // Releases model resources if no longer used.
+                            model.close();
+                        } catch (IOException e) {
+                            // TODO Handle the exception
+                            Log.d("Error","start here");
+                            e.printStackTrace();
+                            throw new RuntimeException(e);
                         }
-
-
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override

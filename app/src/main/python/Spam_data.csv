@@ -1,0 +1,171 @@
+message,spam/ham,hindi,marathi
+good night,spam,शुभ रात्रि,शुभ रात्री
+good morning,spam,शुभ प्रभात,शुभ प्रभात
+happy diwali,spam,दीपावली की हार्दिक शुभकामनाएं,दिवाळीच्या शुभेच्छा
+happy christmas,spam,क्रिसमस की शुभकामना,आनंदी ख्रिसमस
+happy new year,spam,नए साल की शुभकामनाएँ,नवीन वर्षाच्या शुभेच्छा
+notice,ham,सूचना,सूचना
+fraud,spam,धोखा,फसवणूक
+alert,spam,चेतावनी,सतर्क
+important notice,ham,महत्वपूर्ण सूचना,महत्वाची सूचना
+sharechat,spam,शरिचत,शाल
+the 27 most popular ai tools 2023,ham,27 सबसे लोकप्रिय एआई उपकरण 2023,27 सर्वात लोकप्रिय एआय टूल्स 2023
+time table,ham,समय सारणी,वेळापत्रक
+kit,ham,किट,किट
+mharastra student invoation challenge,ham,मारास्ट्रा छात्र चालान चुनौती,मारास्ट्रा स्टुडंट इन्व्होएशन चॅलेंज
+hackathon,ham,आयोजित हैकथॉन,हॅकॅथॉन
+kaun banega corepati,spam,कौन बनेगा केपति,कोण वाष्प होईल
+happy holi,spam,होली की शुभकामनाएं,होळीच्या शुभेच्छा
+happy rakshabandhan,spam,हैप्पी रक्षाबंधन,आनंदी रक्षाबंधन
+happy dussehera,spam,हैप्पी दशहरा,आनंदी दीसेहरा
+happy independence day,spam,स्वतंत्रता दिवस की शुभकामनाएं,स्वातंत्र्य दिनाच्या शुभेच्छा
+happy republic day,spam,हैप्पी रिपब्लिक डे,रिपब्लिक डे शुभेच्छा
+happy friendship day,spam,आपके लिए मित्रता दिवस मंगलमय हो,मैत्री दिवसाच्या शुभेच्छा
+happy Sunday,spam,रविवार मुबारक हो,शुभ रविवार
+rummy circle,spam,रम्मी सर्कल,रम्मी सर्कल
+junglee rummy,spam,कंजूस,जंगली रमी
+happy makarsankranti,spam,हैप्पी मकरसांकरंती,हॅपी मकरासंक्रांती
+happy valentine day,spam,हैप्पी वेलेंटाइन दिन,व्हॅलेंटाईन डे हार्दिक शुभेच्छा
+happy rose day,spam,हैप्पी रोज डे,गुलाब दिवसाच्या शुभेच्छा
+happy birthday,spam,जन्मदिन की शुभकामनाएँ,वाढदिवसाच्या हार्दिक शुभेच्छा
+happy anniversary,spam,सालगिरह मुबारक,वर्धापन दिन शुभेच्छा
+happy,spam,खुश,आनंदी
+happy ramjan id,spam,हैप्पी रमजान ईद,रमजान ईदच्या शुभेच्छा
+happy enviroment day,spam,हैप्पी एनवायरनमेंट डे,पर्यावरण दिवसाच्या शुभेच्छा
+day,spam,दिन,दिवस
+congratulations,spam,बधाई हो,अभिनंदन
+we're hiring interns,ham,हम इंटर्न को काम पर रख रहे हैं,आम्ही इंटर्न भाड्याने घेत आहोत
+we arre hiring,ham,हम भर्ती कर रहे हैं,आम्ही भाड्याने घेत आहोत
+blood donation,ham,रक्तदान,रक्तदान
+register now,ham,अभी पंजीकरण करें,अाता नोंदणी करा
+eye checkup,ham,नेत्र की जाँच,डोळा तपासणी
+"Machine learning is type of AI that enables effectively growing and
+predicting outcomes using various domain such as mathematics
+computer science to build machine learning model.",ham,"मशीन लर्निंग एआई का प्रकार है जो प्रभावी रूप से बढ़ने में सक्षम बनाता है और
+गणित जैसे विभिन्न डोमेन का उपयोग करके परिणामों की भविष्यवाणी करना
+मशीन लर्निंग मॉडल बनाने के लिए कंप्यूटर विज्ञान।","मशीन लर्निंग हा एआयचा प्रकार आहे जो प्रभावीपणे वाढण्यास सक्षम करतो आणि
+गणितासारख्या विविध डोमेनचा वापर करून निकालांचा अंदाज
+मशीन लर्निंग मॉडेल तयार करण्यासाठी संगणक विज्ञान."
+"Supervised learning is a type of machine learning method in which we
+provide sample labeled data to the machine learning system in order to
+train it, and on that basis, it predicts the output.",ham,"पर्यवेक्षित शिक्षा एक प्रकार की मशीन सीखने की विधि है जिसमें हम
+मशीन लर्निंग सिस्टम को नमूना लेबल डेटा प्रदान करें
+इसे प्रशिक्षित करें, और उस आधार पर, यह आउटपुट की भविष्यवाणी करता है।","पर्यवेक्षी शिक्षण ही एक मशीन शिक्षण पद्धत आहे ज्यामध्ये आम्ही
+मशीन लर्निंग सिस्टमला नमुना लेबल केलेला डेटा प्रदान करा
+त्यास प्रशिक्षण द्या आणि त्या आधारावर, ते आउटपुटचा अंदाज लावते."
+Ok lar... Joking wif u oni.,ham,ठीक है लार ... मजाक wif u oni।,ठीक आहे ...
+Even my brother is not like to speak with me. They treat me like aids patent.,ham,यहां तक कि मेरा भाई मेरे साथ बात करना पसंद नहीं करता है।वे मुझे एड्स पेटेंट की तरह मानते हैं।,माझ्या भावालाही माझ्याशी बोलायला आवडत नाही.ते माझ्याशी एड्स पेटंटसारखे वागतात.
+"I'm gonna be home soon and i don't want to talk about this stuff anymore tonight, k? I've cried enou…",ham,"मैं जल्द ही घर जा रहा हूँ और मैं आज रात इस सामान के बारे में बात नहीं करना चाहता, के?मैं रोया enou…","मी लवकरच घरी येणार आहे आणि मला आज रात्री या सामग्रीबद्दल बोलायचे नाही, के?मी रडलो आहे एनो…"
+"SIX chances to win CASH! From 100 to 20,000 pounds txt> CSH11 and send to 87575. Cost 150p/day, 6day.",spam,"नकद जीतने के छह मौके!100 से 20,000 पाउंड txt> csh11 और 87575 पर भेजें। लागत 150p/दिन, 6 दिन।","रोख जिंकण्याची सहा संधी!100 ते 20,000 पौंड टेक्स्ट> सीएसएच 11 पर्यंत आणि 87575 वर पाठवा. 150 पी/दिवस, 6 दिवस."
+"URGENT! You have won a 1 week FREE membership in our £100,000 Prize Jackpot! Txt the word: CLAIM to ...",spam,"अति आवश्यक!आपने हमारे £ 100,000 पुरस्कार जैकपॉट में 1 सप्ताह की मुफ्त सदस्यता जीती है!शब्द txt: दावा करने के लिए ...","तातडीचे!आमच्या £ 100,000 बक्षीस जॅकपॉटमध्ये आपण 1 आठवड्याचे विनामूल्य सदस्यता जिंकली आहे!टेक्स्ट हा शब्द: दावा ..."
+"XXXMobileMovieClub: To use your credit, click the WAP link in the next txt message or click here>> h..",spam,"XXXMOBILEMOVIECLUB: अपने क्रेडिट का उपयोग करने के लिए, अगले TXT संदेश में WAP लिंक पर क्लिक करें या यहां क्लिक करें >> H ..","Xxxmobilemoveiclub: आपली क्रेडिट वापरण्यासाठी, पुढील टीएक्सटी संदेशातील डब्ल्यूएपी दुव्यावर क्लिक करा किंवा येथे क्लिक करा >> एच .."
+Fine if that’s the way u feel. That’s the way its gota b,ham,ठीक है अगर वह जिस तरह से आपको लगता है।इस तरह से इसके गोटा बी,जर तुम्हाला असे वाटत असेल तर ठीक आहे.हेच त्याचा गोटा बी आहे
+England v India - dont miss the goals/team news. Txt ur national team to 87077 eg INDIA to 870…,spam,इंग्लैंड बनाम इंडिया - लक्ष्यों/टीम की खबर को याद न करें।TXT उर राष्ट्रीय टीम को 87077 ईजी भारत से 870 तक…,इंग्लंड विरुद्ध इंडिया - गोल/संघाची बातमी गमावू नका.टीएक्सटी यूआर नॅशनल टीम 87077 उदा. इंडिया ते 870…
+So ü pay first lar... Then when is da stock comin…,ham,तो ü पहले अंतिम भुगतान करें ... फिर स्टॉक कॉमिन कब है ...,तर ü प्रथम शेवटचे पैसे द्या ... मग स्टॉक कॉमिन कधी आहे…
+"Congrats! 1 year special cinema pass for 2 is yours. call 09061209465 now! C Suprman V, Matrix3, Sta...",spam,"बधाई!2 के लिए 1 साल का विशेष सिनेमा पास आपका है।अब 09061209465 पर कॉल करें!सी सुपरमैन वी, मैट्रिक्स 3, एसटीए ...","अभिनंदन!2 साठी 1 वर्षाचा विशेष सिनेमा पास आपला आहे.आता 09061209465 वर कॉल करा!सी सुपरमॅन व्ही, मॅट्रिक्स 3, स्टा ..."
+kit,ham,किट,किट
+mharastra student invoation challenge,ham,मारास्ट्रा छात्र चालान चुनौती,मारास्ट्रा स्टुडंट इन्व्होएशन चॅलेंज
+hackathon,ham,आयोजित हैकथॉन,हॅकॅथॉन
+we're hiring interns,ham,हम इंटर्न को काम पर रख रहे हैं,आम्ही इंटर्न भाड्याने घेत आहोत
+we arre hiring,ham,हम भर्ती कर रहे हैं,आम्ही भाड्याने घेत आहोत
+blood donation,ham,रक्तदान,रक्तदान
+register now,ham,अभी पंजीकरण करें,अाता नोंदणी करा
+eye checkup,ham,नेत्र की जाँच,डोळा तपासणी
+"Machine learning is type of AI that enables effectively growing and
+predicting outcomes using various domain such as mathematics
+computer science to build machine learning model.",ham,"मशीन लर्निंग एआई का प्रकार है जो प्रभावी रूप से बढ़ने में सक्षम बनाता है और
+गणित जैसे विभिन्न डोमेन का उपयोग करके परिणामों की भविष्यवाणी करना
+मशीन लर्निंग मॉडल बनाने के लिए कंप्यूटर विज्ञान।","मशीन लर्निंग हा एआयचा प्रकार आहे जो प्रभावीपणे वाढण्यास सक्षम करतो आणि
+गणितासारख्या विविध डोमेनचा वापर करून निकालांचा अंदाज
+मशीन लर्निंग मॉडेल तयार करण्यासाठी संगणक विज्ञान."
+"Supervised learning is a type of machine learning method in which we
+provide sample labeled data to the machine learning system in order to
+train it, and on that basis, it predicts the output.",ham,"पर्यवेक्षित शिक्षा एक प्रकार की मशीन सीखने की विधि है जिसमें हम
+मशीन लर्निंग सिस्टम को नमूना लेबल डेटा प्रदान करें
+इसे प्रशिक्षित करें, और उस आधार पर, यह आउटपुट की भविष्यवाणी करता है।","पर्यवेक्षी शिक्षण ही एक मशीन शिक्षण पद्धत आहे ज्यामध्ये आम्ही
+मशीन लर्निंग सिस्टमला नमुना लेबल केलेला डेटा प्रदान करा
+त्यास प्रशिक्षण द्या आणि त्या आधारावर, ते आउटपुटचा अंदाज लावते."
+Ok lar... Joking wif u oni.,ham,ठीक है लार ... मजाक wif u oni।,ठीक आहे ...
+Ok lar... Joking wif u oni.,ham,ठीक है लार ... मजाक wif u oni।,ठीक आहे ...
+Even my brother is not like to speak with me. They treat me like aids patent.,ham,यहां तक कि मेरा भाई मेरे साथ बात करना पसंद नहीं करता है।वे मुझे एड्स पेटेंट की तरह मानते हैं।,माझ्या भावालाही माझ्याशी बोलायला आवडत नाही.ते माझ्याशी एड्स पेटंटसारखे वागतात.
+"I'm gonna be home soon and i don't want to talk about this stuff anymore tonight, k? I've cried enou…",ham,"मैं जल्द ही घर जा रहा हूँ और मैं आज रात इस सामान के बारे में बात नहीं करना चाहता, के?मैं रोया enou…","मी लवकरच घरी येणार आहे आणि मला आज रात्री या सामग्रीबद्दल बोलायचे नाही, के?मी रडलो आहे एनो…"
+good bye,ham,अलविदा,चांगले बाय
+lottery,spam,लॉटरी,लॉटरी
+win,spam,जीतना,विजय
+Congratulations,spam,बधाई हो,अभिनंदन
+You've won a prize,spam,आपने एक इनाम जीता है,तुम्हाला एक उपहार मिळाला
+Important information,ham,महत्वपूर्ण जानकारी,महत्वाची माहिती
+Job opportunity,spam,नौकरी का मौका,कामाचा अवसर
+"Buy one, get one free",spam,"एक खरीदो, एक मुफ्त पाओ","एक विकत घ्या, एक मोफत मिळवा"
+Urgent: Call me now!,spam,तुरंत: मुझे अभी फ़ोन करें!,तुरंत: माझ्याला आता कॉल करा!
+Exam results are out,ham,परीक्षा के नतीजे आ गए हैं,परीक्षा निकाल आले आहेत
+Happy anniversary,spam,सालगिरह मुबारक,वर्धापन दिन शुभेच्छा
+Special offer for you,spam,आपके लिए विशेष पेशकश,आपल्याला विशेष ऑफर
+Reminder: Meeting at 3 PM,ham,याद दिलाना: सांझ 3 बजे मिलो,सुचना: सांज 3 वाजता भेट द्या
+Good morning,spam,शुभ प्रभात,शुभ प्रभात
+Have a great day!,spam,आपका दिन शुभ हो,तुमचा दिवस सुखद जावो
+Sweet dreams,spam,मीठे सपने,आनंदी सपने
+Good night,spam,शुभ रात्रि,शुभ रात्री
+Sleep tight,spam,गहरी नींद करो,गोड नायट
+See you in the morning,ham,सुबह मिलेंगे,सकाळी भेटू
+Wishing you a peaceful night,spam,आपको शांति से रात बिताने की शुभकामनाएँ,आपल्याला शांत रात्री असावी ही शुभेच्छा
+Win a free smartphone,spam,मुफ्त स्मार्टफ़ोन जीतें,मोफत स्मार्टफोन किंवा टॅबलेट विजता या
+Happy anniversary to us,spam,हमारा सालगिरह,आपला वर्धापन दिन
+Join our loyalty program,spam,हमारे वफादारी कार्यक्रम में शामिल हों,आमच्या वफादारी कार्यक्रमात सामील व्हा
+Important meeting at 2 PM,ham,सांझ 2 बजे महत्वपूर्ण मीटिंग,सुचना: संध्याकाळी 2 वाजता महत्वाची भेट
+Don't miss out,spam,छूने की आवश्यकता नहीं है,विसरू नका
+Happy Father's Day,spam,खुशियों का मौका,आनंदी वडिलांच्या दिनाच्या शुभेच्छा
+Limited-time offer,spam,सीमित समय की पेशकश,सीमित वेळाची ऑफर
+Have a wonderful weekend,spam,एक शानदार वीकेंड हो,एक सुंदर आठवडा हो
+Farewell party tonight,spam,विदाई पार्टी आज रात को,विदाई पार्टी आज रात्री
+Happy Monday!,spam,खुश शुक्रवार!,आनंदी सोमवार!
+Spread kindness,spam,दया फैलाएं,उधळण्यात दया फैलवा
+Always stay positive,spam,हमेशा सकारात्मक रहें,सदैव सकारात्मक रहा
+Embrace every moment,spam,हर पल को गले लगाओ,प्रत्येक क्षणाला स्वीकारा
+Live in the present,spam,वर्तमान में जिए,वर्तमानात जगा
+Dreams come true,spam,सपने सच होते हैं,स्वप्न साकार होतात
+Keep smiling,spam,मुस्कराते रहो,हसण्याची सवय
+Be the best version of you,spam,आपका सबसे अच्छा स्वरूप बनें,आपल्या सर्वोत्तम स्वरुपाची जगा
+Believe in yourself,spam,खुद पर भरोसा रखो,स्वत:ला विश्वास ठेवा
+Love conquers all,spam,प्रेम सबकुछ जीतता है,प्रेम सर्वांच्या सामर्थ्याला नियंत्रित करतो
+Keep your faith strong,spam,अपना विश्वास मजबूत रखो,आपल्या विश्वासाची शक्ती ठेवा
+Unlock divine blessings,spam,दिव्य आशीर्वाद को खोलो,दिव्य आशीर्वाद सुट्का
+Instant spiritual guidance,spam,तुरंत आध्यात्मिक मार्गदर्शन,तुरंत आध्यात्मिक मार्गदर्शन
+Sacred healing miracles,spam,पवित्र चिकित्सा चमत्कार,पवित्र उपचार अद्वितीय
+Divine intervention,spam,दिव्य हस्तक्षेप,दिव्य हस्तक्षेप
+Guaranteed blessings,spam,निश्चित आशीर्वाद,आश्चर्यजनक आशीर्वाद
+Faith is your strength,ham,आपका आश्वास है,आपल्या विश्वासला तुमच्या बळ
+Pray for peace and unity,ham,शांति और एकता के लिए प्रार्थना करें,शांती आणि एकत्वाच्या वाटेल प्रार्थना
+Embrace the light within,ham,अंदर के प्रकाश को ग्रहण करो,आपल्या आंतर्ज्योतीला स्वीकार करा
+Spiritual growth is a journey,ham,आध्यात्मिक विकास एक प्रयास आहे,आध्यात्मिक विकास एक प्रवास आहे
+God's love knows no bounds,ham,भगवान का प्यार सीमा की परेशानी नहीं,देवाचा प्रेम मर्यादा जाणार नाही
+Seek divine blessings in moments,spam,क्षणों में दिव्य आशीर्वाद खोजें,क्षणांत दिव्य आशीर्वाद शोधा
+Join our sacred pilgrimage journey,spam,हमारे पवित्र तीर्थयात्रा सफर में शामिल हों,आमच्या पवित्र तीर्थयात्रेत आणण्यात जोडल्यास
+"Miracles await, just have faith",spam,"चमत्कार इंतजार कर रहे हैं, बस आपकी आस्था बनी रहे","आश्चर्यचे प्रतीक्षा आहे, फक्त तुमच्या विश्वासाचा आकर्षण राहो"
+Sacred offerings for divine blessings,spam,दिव्य आशीर्वाद के लिए पवित्र अर्पण,दिव्य आशीर्वादाच्या लाभासाठी पवित्र उपहार
+Eternal peace through meditation,spam,ध्यान के माध्यम से शाश्वत शांति,ध्यानद्वारे शाश्वत शांती
+Faith brings inner serenity,ham,आस्था आपके आंतरिक शांति लाती है,विश्वास तुमच्या आत्मिक शांतिला आणतो
+Walk the path of righteousness,ham,धर्मपरायण राह पर चलें,धर्माच्या मार्गावर प्रवास करा
+May you find solace in prayers,ham,प्रार्थनाओं में शांति पाएं,प्रार्थनेमध्ये तुम्हाला समाधान मिळो
+Compassion is the key to kindness,ham,दयालुता दयाचा कीलया आहे,दयाच्या मुळावर दयाळूपणा
+Connect with the divine within,ham,आपके अंदर को दिव्य से जोड़ो,आपल्याला आपल्या आंतरिक दिव्याच्या संबंधात आणणार्
+Blessings of peace upon you,ham,शांति के आशीर्वाद आपके ऊपर हों,आपल्या वर शांतीच्या आशीर्वाद
+Walk the path of compassion,ham,दयालुता के मार्ग पर चलें,दयाच्या मार्गावर प्रवास करा
+Seek solace in prayer,ham,प्रार्थना में शांति की तलाश करें,प्रार्थनेत आनंद शोधा
+Faith is your inner strength,ham,आपकी आस्था आपकी आंतरिक शक्ति है,विश्वास आपल्या आंतर्ज्योतीला तुमच्या बळ देतो
+Harmony in diversity,ham,विविधताओं में सामंजस्य,विविधतेत सानंद
+Prayer is a connection to the divine,ham,प्रार्थना दिव्य से जुड़ने का माध्यम है,प्रार्थना दिव्य संबंधित आहे
+Kindness knows no boundaries,ham,दयालुता की कोई सीमा नहीं,दयाच्या मर्यादा नसताना
+May peace reside in your heart,ham,शांति आपके दिल में बसे,शांती तुमच्या हृदयात वास करो
+Faith is the answer to uncertainty,ham,विश्वास अनिश्चितता का उत्तर है,अनिश्चिततेला विश्वास सोडवतो
+Find serenity through meditation,ham,ध्यान के माध्यम से शांति पाएं,ध्यानाच्या माध्यमे आपल्याला शांती मिळाली
+Divine blessings await you,spam,"आपका इंतजार है, दिव्य आशीर्वाद",आपल्याला आशीर्वाद वाटत आहे
+Unlock your spiritual potential,spam,अपनी आध्यात्मिक क्षमता को खोलें,आपल्या आध्यात्मिक क्षमतेचा तालाबंद करा
+Sacred rituals for prosperity,spam,समृद्धि के लिए पवित्र आचरण,संपदा साठी पवित्र विधी
+Pray for a miracle in your life,spam,अपने जीवन में चमत्कार की प्रार्थना करें,आपल्या जीवनात आश्चर्याची प्रार्थना करा
+Spiritual awakening is the key,spam,आध्यात्मिक जागरूकता है कुंजी,आध्यात्मिक जागरूकता म्हणजे कील
+Exclusive blessings for believers,spam,विश्वासी के लिए विशेष आशीर्वाद,विश्वासींसाठी विशेष आशीर्वाद
+Sacred journey to find inner peace,spam,आंतरिक शांति पाने के लिए पवित्र यात्रा,आंतरिक शांतीसाठी पवित्र प्रवास
+Divine love: Your guiding light,spam,दिव्य प्रेम: आपकी मार्गदर्शक दीपक,दिव्य प्रेम: तुमच्या मार्गदर्शक प्रकाश
+Immerse in sacred blessings,spam,पवित्र आशीर्वाद में विलीन हो,पवित्र आशीर्वादात लुटा
+Miracles unfold through faith,spam,आशा के माध्यम से चमत्कार खुलते हैं,विश्वासातील माध्यमे आश्चर्य उघडतात
