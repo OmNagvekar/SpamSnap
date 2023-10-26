@@ -319,7 +319,7 @@ public class SplashActivity extends AppCompatActivity {
                             SpamsnapModelEnglish model = SpamsnapModelEnglish.newInstance(SplashActivity.this);
 
                             // Creates inputs for reference.
-                            TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 337}, DataType.FLOAT32);
+                            TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 1203}, DataType.FLOAT32);
                             if (! Python.isStarted()) {
                                 Python.start(new AndroidPlatform(SplashActivity.this));
                             }
@@ -330,8 +330,8 @@ public class SplashActivity extends AppCompatActivity {
                                 if (englishText != null ) {
                                     PyObject result = englishText.call(text.getText().toLowerCase());
                                     float[] floatData = result.toJava(float[].class);
-                                    if(floatData.length==337){
-                                        for(int i= 0;i<337 ;i++){
+                                    if(floatData.length==1203){
+                                        for(int i= 0;i<1203 ;i++){
                                             inputFeature0.getFloatArray()[i]=floatData[i];
                                         }
                                     }

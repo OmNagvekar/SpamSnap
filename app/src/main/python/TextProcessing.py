@@ -9,7 +9,7 @@ with open (filename) as csv_file:
 
 
 
-# df = data.where((pd.notnull),' ')
+df = df.where((pd.notnull),' ')
 df.loc[df['spam/ham']=="spam","spam/ham"]=0
 df.loc[df['spam/ham']=="ham","spam/ham"]=1
 x = df['message']
