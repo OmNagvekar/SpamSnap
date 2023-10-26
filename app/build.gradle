@@ -28,10 +28,7 @@ android {
             pip {
                 // A requirement specifier, with or without a version number:
                 install "scikit-learn"
-                install "nltk"
                 install "pandas"
-                install "tensorflow"
-                install "numpy"
             }
         }
 

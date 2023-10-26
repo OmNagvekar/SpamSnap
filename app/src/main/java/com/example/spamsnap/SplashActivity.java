@@ -249,7 +249,6 @@ public class SplashActivity extends AppCompatActivity {
 
 
             BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inSampleSize=2;
             int minHeightWidth = 32;
             int imgWidth;
             int imgheight;
@@ -320,44 +319,53 @@ public class SplashActivity extends AppCompatActivity {
                             SpamsnapModelEnglish model = SpamsnapModelEnglish.newInstance(SplashActivity.this);
 
                             // Creates inputs for reference.
-                            TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 272}, DataType.FLOAT32);
+                            TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 337}, DataType.FLOAT32);
                             if (! Python.isStarted()) {
                                 Python.start(new AndroidPlatform(SplashActivity.this));
                             }
                             Python py = Python.getInstance();
                             PyObject module =  py.getModule("TextProcessing");
-                            PyObject englishText = module.get("english");
-                            if (englishText != null ) {
-                                PyObject result = englishText.call(text.getText().toLowerCase());
-                                float[] floatData = result.toJava(float[].class);
-                                if(floatData.length==272){
-                                    for(int i= 0;i<272 ;i++){
-                                        inputFeature0.getFloatArray()[i]=floatData[i];
+                            if(text.getText().toLowerCase()!=null || !(text.getText().toLowerCase().equals("")) || !(text.getText().toLowerCase().equals(" "))){
+                                PyObject englishText = module.get("english");
+                                if (englishText != null ) {
+                                    PyObject result = englishText.call(text.getText().toLowerCase());
+                                    float[] floatData = result.toJava(float[].class);
+                                    if(floatData.length==337){
+                                        for(int i= 0;i<337 ;i++){
+                                            inputFeature0.getFloatArray()[i]=floatData[i];
+                                        }
+                                    }
+                                    SpamsnapModelEnglish.Outputs outputs = model.process(inputFeature0);
+                                    TensorBuffer outputFeature0 = outputs.getOutputFeature0AsTensorBuffer();
+                                    Log.d("Result ML", "onSuccess: "+ outputFeature0+" filename: "+img.imagename);
+                                    if (outputFeature0.getDataType() == DataType.FLOAT32) {
+                                        //                                PyObject final_result_function = module.get("Result");
+                                        float[] floatArray = outputFeature0.getFloatArray();
+                                        int final_result = argmax(floatArray);
+                                        Log.d("Result ML", "Result: "+ final_result+" spam filename: "+img.imagename);
+                                        if (final_result==1) {
+                                            //spam image
+                                            classifiedImages.add(img);
+                                            editor.putInt(img.imagepath,1);
+                                            editor.apply();
+                                            Log.d("ML MODEL", counter+" of "+size+" Text: "+text.getText().toLowerCase()+" spam filename: "+img.imagename);
+                                        } else if (final_result==0){
+                                            //ham image
+                                            editor.putInt(img.imagepath,-1);
+                                            editor.apply();
+                                            Log.d("ML MODEL", counter+" of "+size+" Text: "+text.getText().toLowerCase()+" ham filename: "+img.imagename);
+                                        }
                                     }
                                 }
+
+                            }else {
+                                editor.putInt(img.imagepath,-1);
+                                editor.apply();
+                                Log.d("ML MODEL", counter+" of "+size+" Text: "+text.getText().toLowerCase()+" ham filename: "+img.imagename);
                             }
+
                             // Runs model inference and gets result.
-                            SpamsnapModelEnglish.Outputs outputs = model.process(inputFeature0);
-                            TensorBuffer outputFeature0 = outputs.getOutputFeature0AsTensorBuffer();
-                            Log.d("Result ML", "onSuccess: "+ outputFeature0);
-                            if (outputFeature0.getDataType() == DataType.FLOAT32) {
-                                PyObject final_result_function = module.get("Result");
-                                float[] floatArray = outputFeature0.getFloatArray();
-                                PyObject final_result = final_result_function.call((Object) floatArray);
-                                Log.d("Result ML", "Result: "+ final_result.toInt());
-                                if (final_result.toInt()==0) {
-                                    //spam image
-                                    classifiedImages.add(img);
-                                    editor.putInt(img.imagepath,1);
-                                    editor.apply();
-                                    Log.d("ML MODEL", counter+" of "+size+" Text: "+text.getText().toLowerCase());
-                                } else if (final_result.toInt()==1){
-                                    //ham image
-                                    editor.putInt(img.imagepath,-1);
-                                    editor.apply();
-                                    Log.d("ML MODEL", counter+" of "+size+" Text: "+text.getText().toLowerCase());
-                                }
-                            }
+
 
                             // Releases model resources if no longer used.
                             model.close();
@@ -381,6 +389,7 @@ public class SplashActivity extends AppCompatActivity {
 
 
             }
+            Log.d("Size", "total spam images count "+classifiedImages.size());
 
             
             if ((counter==size) && size!=0){
@@ -393,5 +402,17 @@ public class SplashActivity extends AppCompatActivity {
 
             return null;
         }
+    }
+    public int argmax(float[] values) {
+        int argmax1 = 0;
+        float maxValue = values[0];
+
+        for (int i = 1; i < values.length; i++) {
+            if (values[i] > maxValue) {
+                argmax1 = i;
+                maxValue = values[i];
+            }
+        }
+        return argmax1;
     }
 }
