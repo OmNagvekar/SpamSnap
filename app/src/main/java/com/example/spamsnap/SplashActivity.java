@@ -326,22 +326,22 @@ public class SplashActivity extends AppCompatActivity {
                             Python py = Python.getInstance();
                             PyObject module =  py.getModule("TextProcessing");
                             if(text.getText().toLowerCase()!=null || !(text.getText().toLowerCase().equals("")) || !(text.getText().toLowerCase().equals(" "))){
-                                PyObject englishText = module.get("english");
+                                PyObject englishText = module.get("english");//this Pyobject loads the english textprocessing python function
                                 if (englishText != null ) {
-                                    PyObject result = englishText.call(text.getText().toLowerCase());
-                                    float[] floatData = result.toJava(float[].class);
-                                    if(floatData.length==1203){
+                                    PyObject result = englishText.call(text.getText().toLowerCase());//passes arguments to the english function
+                                    float[] floatData = result.toJava(float[].class);//this converts numpy floating data array to java float array
+                                    if(floatData.length==1203){      //coverts the float array array in tensor matrix
                                         for(int i= 0;i<1203 ;i++){
                                             inputFeature0.getFloatArray()[i]=floatData[i];
                                         }
                                     }
-                                    SpamsnapModelEnglish.Outputs outputs = model.process(inputFeature0);
-                                    TensorBuffer outputFeature0 = outputs.getOutputFeature0AsTensorBuffer();
+                                    SpamsnapModelEnglish.Outputs outputs = model.process(inputFeature0);//passes the data to ML model
+                                    TensorBuffer outputFeature0 = outputs.getOutputFeature0AsTensorBuffer();// gets the output of ML model
                                     Log.d("Result ML", "onSuccess: "+ outputFeature0+" filename: "+img.imagename);
                                     if (outputFeature0.getDataType() == DataType.FLOAT32) {
-                                        //                                PyObject final_result_function = module.get("Result");
-                                        float[] floatArray = outputFeature0.getFloatArray();
-                                        int final_result = argmax(floatArray);
+                                        //PyObject final_result_function = module.get("Result");
+                                        float[] floatArray = outputFeature0.getFloatArray();// coverts tensor matrix to floating array
+                                        int final_result = argmax(floatArray);// finds the maximum prediction value from array
                                         Log.d("Result ML", "Result: "+ final_result+" spam filename: "+img.imagename);
                                         if (final_result==1) {
                                             //spam image
