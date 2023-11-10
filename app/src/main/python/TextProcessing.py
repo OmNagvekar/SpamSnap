@@ -57,6 +57,8 @@ def marathi(b):
     input_message = [normalized_text]
     input_data_feature = feature_extraction_marathi.transform(input_message)
     input_data_feature = input_data_feature.toarray()
+    byte_data = input_data_feature.tobytes()
+    return byte_data
 
 def english(b):
     normalized_text = re.sub(r'\n+', '\n', b)
@@ -77,7 +79,8 @@ def hindi(b):
     input_message = [normalized_text]
     input_data_feature = feature_extraction_hindi.transform(input_message)
     input_data_feature = input_data_feature.toarray()
-    return input_data_feature
+    byte_data = input_data_feature.tobytes()
+    return byte_data
 
 # def Result(float_array):
 #     float_object = np.array(float_array)

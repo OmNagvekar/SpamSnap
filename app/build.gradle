@@ -64,12 +64,13 @@ dependencies {
 
 
 //  ML model libs
-    implementation 'com.google.mlkit:text-recognition:16.0.0-beta6'
-    implementation 'com.google.mlkit:text-recognition-devanagari:16.0.0-beta6'
-    implementation 'androidx.preference:preference:1.2.0'
-    implementation 'org.tensorflow:tensorflow-lite-support:0.1.0'
-    implementation 'org.tensorflow:tensorflow-lite-metadata:0.1.0'
-    implementation 'org.tensorflow:tensorflow-lite-gpu:2.3.0'
+    implementation 'com.google.mlkit:text-recognition:16.0.0'
+    implementation 'com.google.mlkit:text-recognition-devanagari:16.0.0'
+    implementation 'androidx.preference:preference:1.2.1'
+    implementation 'org.tensorflow:tensorflow-lite-support:0.4.4'
+    implementation 'org.tensorflow:tensorflow-lite-metadata:0.4.4'
+    implementation 'org.tensorflow:tensorflow-lite-gpu:2.14.0'
+    implementation 'com.google.mlkit:language-id:17.0.4'
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'

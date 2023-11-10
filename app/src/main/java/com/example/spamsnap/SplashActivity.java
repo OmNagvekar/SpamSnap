@@ -24,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -32,9 +33,13 @@ import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
 import com.chaquo.python.android.AndroidPlatform;
 import com.example.spamsnap.ml.SpamsnapModelEnglish;
+import com.example.spamsnap.ml.SpamsnapModelHindi;
+import com.example.spamsnap.ml.SpamsnapModelMarathi;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.mlkit.nl.languageid.LanguageIdentification;
+import com.google.mlkit.nl.languageid.LanguageIdentifier;
 import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.text.Text;
 import com.google.mlkit.vision.text.TextRecognition;
@@ -315,66 +320,176 @@ public class SplashActivity extends AppCompatActivity {
                         //Log.d("IMAGE", "Text in image full line: "+tb.getText().toLowerCase()+" Image Name:"+img.imagename); //this gets only some 2lines text block
                         //for (Text.Line l : tb.getLines()){
                         //Log.d("IMAGE2", "Text in image full line: "+l.getText().toLowerCase()+" Image Name:"+img.imagename);// this only gets one line at a time
-                        try {
-                            SpamsnapModelEnglish model = SpamsnapModelEnglish.newInstance(SplashActivity.this);
 
-                            // Creates inputs for reference.
-                            TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 1203}, DataType.FLOAT32);
-                            if (! Python.isStarted()) {
-                                Python.start(new AndroidPlatform(SplashActivity.this));
-                            }
-                            Python py = Python.getInstance();
-                            PyObject module =  py.getModule("TextProcessing");
-                            if(text.getText().toLowerCase()!=null || !(text.getText().toLowerCase().equals("")) || !(text.getText().toLowerCase().equals(" "))){
-                                PyObject englishText = module.get("english");//this Pyobject loads the english textprocessing python function
-                                if (englishText != null ) {
-                                    PyObject result = englishText.call(text.getText().toLowerCase());//passes arguments to the english function
-                                    float[] floatData = result.toJava(float[].class);//this converts numpy floating data array to java float array
-                                    if(floatData.length==1203){      //coverts the float array array in tensor matrix
-                                        for(int i= 0;i<1203 ;i++){
-                                            inputFeature0.getFloatArray()[i]=floatData[i];
-                                        }
-                                    }
-                                    SpamsnapModelEnglish.Outputs outputs = model.process(inputFeature0);//passes the data to ML model
-                                    TensorBuffer outputFeature0 = outputs.getOutputFeature0AsTensorBuffer();// gets the output of ML model
-                                    Log.d("Result ML", "onSuccess: "+ outputFeature0+" filename: "+img.imagename);
-                                    if (outputFeature0.getDataType() == DataType.FLOAT32) {
-                                        //PyObject final_result_function = module.get("Result");
-                                        float[] floatArray = outputFeature0.getFloatArray();// coverts tensor matrix to floating array
-                                        int final_result = argmax(floatArray);// finds the maximum prediction value from array
-                                        Log.d("Result ML", "Result: "+ final_result+" spam filename: "+img.imagename);
-                                        if (final_result==1) {
-                                            //spam image
-                                            classifiedImages.add(img);
-                                            editor.putInt(img.imagepath,1);
-                                            editor.apply();
-                                            Log.d("ML MODEL", counter+" of "+size+" Text: "+text.getText().toLowerCase()+" spam filename: "+img.imagename);
-                                        } else if (final_result==0){
-                                            //ham image
-                                            editor.putInt(img.imagepath,-1);
-                                            editor.apply();
-                                            Log.d("ML MODEL", counter+" of "+size+" Text: "+text.getText().toLowerCase()+" ham filename: "+img.imagename);
-                                        }
-                                    }
-                                }
+                        // Creates inputs for reference.
 
-                            }else {
-                                editor.putInt(img.imagepath,-1);
-                                editor.apply();
-                                Log.d("ML MODEL", counter+" of "+size+" Text: "+text.getText().toLowerCase()+" ham filename: "+img.imagename);
-                            }
-
-                            // Runs model inference and gets result.
-
-
-                            // Releases model resources if no longer used.
-                            model.close();
-                        } catch (IOException e) {
-                            // TODO Handle the exception
-                            Log.d("Error","start here");
-                            e.printStackTrace();
-                            throw new RuntimeException(e);
+                        if (! Python.isStarted()) {
+                            Python.start(new AndroidPlatform(SplashActivity.this));
                         }
+                        Python py = Python.getInstance();
+                        PyObject module =  py.getModule("TextProcessing");
+                        if(text.getText().toLowerCase()!=null || !(text.getText().toLowerCase().equals("")) || !(text.getText().toLowerCase().equals(" "))){
+                            LanguageIdentifier languageIdentifier =
+                                    LanguageIdentification.getClient();
+                            languageIdentifier.identifyLanguage(normalizeText(text.getText().toLowerCase()))
+                                    .addOnSuccessListener(
+                                            new OnSuccessListener<String>() {
+                                                @Override
+                                                public void onSuccess(@Nullable String languageCode) {
+                                                    assert languageCode != null;
+                                                    if (languageCode.equals("und")) {
+                                                        editor.putInt(img.imagepath,-1);
+                                                        editor.apply();
+                                                        Log.d("ML MODEL", counter+" of "+size+" Text: "+text.getText().toLowerCase()+" ham filename: "+img.imagename);
+                                                        Log.d("Language", "Can't identify language.");
+                                                    } else if (languageCode.equals("en")) {
+                                                        SpamsnapModelEnglish model = null;
+                                                        TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 1203}, DataType.FLOAT32);
+                                                        try {
+                                                            model = SpamsnapModelEnglish.newInstance(SplashActivity.this);
+                                                        } catch (IOException e) {
+                                                            throw new RuntimeException(e);
+                                                        }
+                                                        PyObject englishText = module.get("english");//this Pyobject loads the english textprocessing python function
+                                                        if (englishText != null ) {
+                                                            PyObject result = englishText.call(text.getText().toLowerCase());//passes arguments to the english function
+                                                            float[] floatData = result.toJava(float[].class);//this converts numpy floating data array to java float array
+                                                            if(floatData.length==1203){      //coverts the float array array in tensor matrix
+                                                                for(int i= 0;i<1203 ;i++){
+                                                                    inputFeature0.getFloatArray()[i]=floatData[i];
+                                                                }
+                                                            }
+                                                            SpamsnapModelEnglish.Outputs outputs = model.process(inputFeature0);//passes the data to ML model
+                                                            TensorBuffer outputFeature0 = outputs.getOutputFeature0AsTensorBuffer();// gets the output of ML model
+                                                            Log.d("Result ML", "onSuccess: "+ outputFeature0+" filename: "+img.imagename);
+                                                            if (outputFeature0.getDataType() == DataType.FLOAT32) {
+                                                                //PyObject final_result_function = module.get("Result");
+                                                                float[] floatArray = outputFeature0.getFloatArray();// coverts tensor matrix to floating array
+                                                                int final_result = argmax(floatArray);// finds the maximum prediction value from array
+                                                                Log.d("Result ML", "Result: "+ final_result+" spam filename: "+img.imagename);
+                                                                if (final_result==1) {
+                                                                    //spam image
+                                                                    classifiedImages.add(img);
+                                                                    editor.putInt(img.imagepath,1);
+                                                                    editor.apply();
+                                                                    Log.d("ML MODEL", counter+" of "+size+" Text: "+text.getText().toLowerCase()+" spam filename: "+img.imagename);
+                                                                } else if (final_result==0){
+                                                                    //ham image
+                                                                    editor.putInt(img.imagepath,-1);
+                                                                    editor.apply();
+                                                                    Log.d("ML MODEL", counter+" of "+size+" Text: "+text.getText().toLowerCase()+" ham filename: "+img.imagename);
+                                                                }
+                                                            }
+                                                        }
+                                                        model.close();
+                                                        Log.d("Language", "Language: " + languageCode);
+                                                    } else if (languageCode.equals("hi")) {
+                                                        SpamsnapModelHindi model = null;
+                                                        TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 592}, DataType.FLOAT32);
+                                                        try {
+                                                            model = SpamsnapModelHindi.newInstance(SplashActivity.this);
+                                                        } catch (IOException e) {
+                                                            throw new RuntimeException(e);
+                                                        }
+                                                        PyObject hindiText = module.get("hindi");//this Pyobject loads the english textprocessing python function
+                                                        if (hindiText != null ) {
+                                                            PyObject result = hindiText.call(text.getText().toLowerCase());//passes arguments to the english function
+                                                            float[] floatData = result.toJava(float[].class);//this converts numpy floating data array to java float array
+                                                            if(floatData.length==592){      //coverts the float array array in tensor matrix
+                                                                for(int i= 0;i<592 ;i++){
+                                                                    inputFeature0.getFloatArray()[i]=floatData[i];
+                                                                }
+                                                            }
+                                                            SpamsnapModelHindi.Outputs outputs = model.process(inputFeature0);//passes the data to ML model
+                                                            TensorBuffer outputFeature0 = outputs.getOutputFeature0AsTensorBuffer();// gets the output of ML model
+                                                            Log.d("Result ML", "onSuccess: "+ outputFeature0+" filename: "+img.imagename);
+                                                            if (outputFeature0.getDataType() == DataType.FLOAT32) {
+                                                                //PyObject final_result_function = module.get("Result");
+                                                                float[] floatArray = outputFeature0.getFloatArray();// coverts tensor matrix to floating array
+                                                                int final_result = argmax(floatArray);// finds the maximum prediction value from array
+                                                                Log.d("Result ML", "Result: "+ final_result+" spam filename: "+img.imagename);
+                                                                if (final_result==1) {
+                                                                    //spam image
+                                                                    classifiedImages.add(img);
+                                                                    editor.putInt(img.imagepath,1);
+                                                                    editor.apply();
+                                                                    Log.d("ML MODEL", counter+" of "+size+" Text: "+text.getText().toLowerCase()+" spam filename: "+img.imagename);
+                                                                } else if (final_result==0){
+                                                                    //ham image
+                                                                    editor.putInt(img.imagepath,-1);
+                                                                    editor.apply();
+                                                                    Log.d("ML MODEL", counter+" of "+size+" Text: "+text.getText().toLowerCase()+" ham filename: "+img.imagename);
+                                                                }
+                                                            }
+                                                        }
+                                                        model.close();
+                                                        Log.d("Language", "Language: " + languageCode);
+                                                    }else if (languageCode.equals("mr")){
+                                                        SpamsnapModelMarathi model = null;
+                                                        TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 732}, DataType.FLOAT32);
+                                                        try {
+                                                            model = SpamsnapModelMarathi.newInstance(SplashActivity.this);
+                                                        } catch (IOException e) {
+                                                            throw new RuntimeException(e);
+                                                        }
+                                                        PyObject marathiText = module.get("marathi");//this Pyobject loads the english textprocessing python function
+                                                        if (marathiText != null ) {
+                                                            PyObject result = marathiText.call(text.getText().toLowerCase());//passes arguments to the english function
+                                                            float[] floatData = result.toJava(float[].class);//this converts numpy floating data array to java float array
+                                                            if(floatData.length==732){      //coverts the float array array in tensor matrix
+                                                                for(int i= 0;i<732 ;i++){
+                                                                    inputFeature0.getFloatArray()[i]=floatData[i];
+                                                                }
+                                                            }
+                                                            SpamsnapModelMarathi.Outputs outputs = model.process(inputFeature0);//passes the data to ML model
+                                                            TensorBuffer outputFeature0 = outputs.getOutputFeature0AsTensorBuffer();// gets the output of ML model
+                                                            Log.d("Result ML", "onSuccess: "+ outputFeature0+" filename: "+img.imagename);
+                                                            if (outputFeature0.getDataType() == DataType.FLOAT32) {
+                                                                //PyObject final_result_function = module.get("Result");
+                                                                float[] floatArray = outputFeature0.getFloatArray();// coverts tensor matrix to floating array
+                                                                int final_result = argmax(floatArray);// finds the maximum prediction value from array
+                                                                Log.d("Result ML", "Result: "+ final_result+" spam filename: "+img.imagename);
+                                                                if (final_result==1) {
+                                                                    //spam image
+                                                                    classifiedImages.add(img);
+                                                                    editor.putInt(img.imagepath,1);
+                                                                    editor.apply();
+                                                                    Log.d("ML MODEL", counter+" of "+size+" Text: "+text.getText().toLowerCase()+" spam filename: "+img.imagename);
+                                                                } else if (final_result==0){
+                                                                    //ham image
+                                                                    editor.putInt(img.imagepath,-1);
+                                                                    editor.apply();
+                                                                    Log.d("ML MODEL", counter+" of "+size+" Text: "+text.getText().toLowerCase()+" ham filename: "+img.imagename);
+                                                                }
+                                                            }
+                                                        }
+                                                        model.close();
+                                                        Log.d("Language", "Language: " + languageCode);
+                                                    }else {
+                                                        Log.d("Language", "Language: " + languageCode);
+                                                    }
+                                                }
+                                            })
+                                    .addOnFailureListener(
+                                            new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    // Model couldn’t be loaded or other internal error.
+                                                    // ...
+                                                }
+                                            });
+
+
+                        }else {
+                            editor.putInt(img.imagepath,-1);
+                            editor.apply();
+                            Log.d("ML MODEL", counter+" of "+size+" Text: "+text.getText().toLowerCase()+" ham filename: "+img.imagename);
+                        }
+
+                        // Runs model inference and gets result.
+
+
+                        // Releases model resources if no longer used.
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -414,5 +529,14 @@ public class SplashActivity extends AppCompatActivity {
             }
         }
         return argmax1;
+    }
+    public static String normalizeText(String input) {
+        // Your text normalization code here
+        String normalizedText = input.replaceAll("\\n+", "\n");
+        normalizedText = normalizedText.replaceAll("\\s+", " ").trim();
+        normalizedText = normalizedText.replaceAll("\\(\\S+\\)", "");
+        normalizedText = normalizedText.replaceAll("https?://\\S+", "");
+
+        return normalizedText;
     }
 }
