@@ -344,7 +344,7 @@ public class SplashActivity extends AppCompatActivity {
                                                         Log.d("Language", "Can't identify language.");
                                                     } else if (languageCode.equals("en")) {
                                                         SpamsnapModelEnglish model = null;
-                                                        TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 1203}, DataType.FLOAT32);
+                                                        TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 1189}, DataType.FLOAT32);
                                                         try {
                                                             model = SpamsnapModelEnglish.newInstance(SplashActivity.this);
                                                         } catch (IOException e) {
@@ -354,8 +354,8 @@ public class SplashActivity extends AppCompatActivity {
                                                         if (englishText != null ) {
                                                             PyObject result = englishText.call(text.getText().toLowerCase());//passes arguments to the english function
                                                             float[] floatData = result.toJava(float[].class);//this converts numpy floating data array to java float array
-                                                            if(floatData.length==1203){      //coverts the float array array in tensor matrix
-                                                                for(int i= 0;i<1203 ;i++){
+                                                            if(floatData.length==1189){      //coverts the float array array in tensor matrix
+                                                                for(int i= 0;i<1189 ;i++){
                                                                     inputFeature0.getFloatArray()[i]=floatData[i];
                                                                 }
                                                             }
@@ -385,7 +385,7 @@ public class SplashActivity extends AppCompatActivity {
                                                         Log.d("Language", "Language: " + languageCode);
                                                     } else if (languageCode.equals("hi")) {
                                                         SpamsnapModelHindi model = null;
-                                                        TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 592}, DataType.FLOAT32);
+                                                        TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 3280}, DataType.FLOAT32);
                                                         try {
                                                             model = SpamsnapModelHindi.newInstance(SplashActivity.this);
                                                         } catch (IOException e) {
@@ -395,8 +395,8 @@ public class SplashActivity extends AppCompatActivity {
                                                         if (hindiText != null ) {
                                                             PyObject result = hindiText.call(text.getText().toLowerCase());//passes arguments to the english function
                                                             float[] floatData = result.toJava(float[].class);//this converts numpy floating data array to java float array
-                                                            if(floatData.length==592){      //coverts the float array array in tensor matrix
-                                                                for(int i= 0;i<592 ;i++){
+                                                            if(floatData.length==3280){      //coverts the float array array in tensor matrix
+                                                                for(int i= 0;i<3280 ;i++){
                                                                     inputFeature0.getFloatArray()[i]=floatData[i];
                                                                 }
                                                             }
@@ -426,7 +426,7 @@ public class SplashActivity extends AppCompatActivity {
                                                         Log.d("Language", "Language: " + languageCode);
                                                     }else if (languageCode.equals("mr")){
                                                         SpamsnapModelMarathi model = null;
-                                                        TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 732}, DataType.FLOAT32);
+                                                        TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 3679}, DataType.FLOAT32);
                                                         try {
                                                             model = SpamsnapModelMarathi.newInstance(SplashActivity.this);
                                                         } catch (IOException e) {
@@ -436,8 +436,8 @@ public class SplashActivity extends AppCompatActivity {
                                                         if (marathiText != null ) {
                                                             PyObject result = marathiText.call(text.getText().toLowerCase());//passes arguments to the english function
                                                             float[] floatData = result.toJava(float[].class);//this converts numpy floating data array to java float array
-                                                            if(floatData.length==732){      //coverts the float array array in tensor matrix
-                                                                for(int i= 0;i<732 ;i++){
+                                                            if(floatData.length==3679){      //coverts the float array array in tensor matrix
+                                                                for(int i= 0;i<3679 ;i++){
                                                                     inputFeature0.getFloatArray()[i]=floatData[i];
                                                                 }
                                                             }

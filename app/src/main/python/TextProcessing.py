@@ -1,6 +1,7 @@
 from sklearn.feature_extraction.text import TfidfVectorizer
 from os.path import dirname, join
 import pandas as pd
+from nltk.tokenize import TweetTokenizer,ToktokTokenizer
 import re
 
 filename = join(dirname(__file__), "Spam_data.csv")
@@ -40,9 +41,16 @@ stop_words = [
     'yourselves'
 ]
 
-feature_extraction_marathi = TfidfVectorizer(min_df=1, stop_words=stop_words_marathi, lowercase=True)
-feature_extraction = TfidfVectorizer(min_df=1, stop_words=stop_words, lowercase=True)
-feature_extraction_hindi = TfidfVectorizer(min_df=1, stop_words=hindi_stop_words, lowercase=True)
+def tokenizer(text):
+    tok = TweetTokenizer()
+    return tok.tokenize(text)
+def tokenizer_2(text):
+    tok = ToktokTokenizer()
+    return tok.tokenize(text)
+
+feature_extraction_marathi = TfidfVectorizer(min_df=1, stop_words=stop_words_marathi, lowercase=True,ngram_range=(1,2),tokenizer=tokenizer)
+feature_extraction = TfidfVectorizer(min_df=1,stop_words=stop_words,lowercase=True,ngram_range=(1,1),tokenizer=tokenizer_2)
+feature_extraction_hindi = TfidfVectorizer(min_df=1, stop_words=hindi_stop_words, lowercase=True,ngram_range=(1,2),tokenizer=tokenizer_2)
 
 feature_extraction.fit_transform(x)
 feature_extraction_marathi.fit_transform(x_mar)
@@ -81,6 +89,7 @@ def hindi(b):
     input_data_feature = input_data_feature.toarray()
     byte_data = input_data_feature.tobytes()
     return byte_data
+
 
 # def Result(float_array):
 #     float_object = np.array(float_array)
