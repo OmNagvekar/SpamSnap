@@ -22,7 +22,7 @@
         style="@style/Widget.AppCompat.TextView"
         android:layout_width="335dp"
         android:layout_height="71dp"
-        android:text="Please wait until all your images are scanned\n\nNote: This takes longer only for first time"
+        android:text="Background processing is supported\n\nNote: This takes longer only for first time"
         android:textColor="#FF5722"
         android:visibility="visible"
         app:autoSizeTextType="uniform"

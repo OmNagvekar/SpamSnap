@@ -58,6 +58,7 @@ import java.util.Objects;
 public class MainActivity extends AppCompatActivity{
     private RecyclerView recyclerView;
     private TextView textView;
+    Button notspam;
     public static ArrayList<Image> classifiedImages = new ArrayList<Image>();;
     private AlertDialog alertDialog;
     private Menu menu ;
@@ -81,13 +82,26 @@ public class MainActivity extends AppCompatActivity{
 //        ActionBar actionBar = getSupportActionBar();
 //        actionBar.setDisplayShowTitleEnabled(false);
 
-
+        notspam=findViewById(R.id.button3);
         textView=findViewById(R.id.textView);
         recyclerView=(RecyclerView) findViewById(R.id.image_recylerview);
         GridLayoutManager layoutManager = new GridLayoutManager(this,3);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
         allimages=new ArrayList<>();
+
+        notspam.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                for (Image image:ImageAdapter.deleteImages){
+                    classifiedImages.remove(image);
+                    SplashActivity.editor.putInt(image.imagepath,-1);
+                    SplashActivity.editor.apply();
+                }
+                ((MainActivity)v.getContext()).recreate();
+                ImageAdapter.deleteImages.clear();
+            }
+        });
 
         if (classifiedImages.size()==0){
             textView.setVisibility(View.VISIBLE);
@@ -134,12 +148,14 @@ public class MainActivity extends AppCompatActivity{
         MenuItem cancel = menu.findItem(R.id.cancel_button);
         MenuItem refresh = menu.findItem(R.id.refresh);
         floatingActionButton = findViewById(R.id.floatingActionButton);
+        notspam = findViewById(R.id.button3);
         Intent intent = getIntent();
 
         switch (item.getItemId()){
             case R.id.edit:
                 editItem.setVisible(false);
                 floatingActionButton.setVisibility(View.VISIBLE);
+                notspam.setVisibility(View.VISIBLE);
                 cancel.setVisible(true);
                 refresh.setVisible(false);
 
@@ -150,15 +166,16 @@ public class MainActivity extends AppCompatActivity{
                             public void onClick(View v) {
                                 if (ImageAdapter.deleteImages.isEmpty()){
                                     Toast.makeText(MainActivity.this, "Select atleast one image", Toast.LENGTH_SHORT).show();
-                                }else {
+                                }else
                                     alert();
 
                                 }
-                            }
+
                         });
                     }
                     else {
                         floatingActionButton.setVisibility(View.GONE);
+                        notspam.setVisibility(View.GONE);
                         editItem.setVisible(true);
                         cancel.setVisible(false);
                         refresh.setVisible(true);
@@ -186,6 +203,7 @@ public class MainActivity extends AppCompatActivity{
                 editItem.setVisible(true);
                 cancel.setVisible(false);
                 floatingActionButton.setVisibility(View.INVISIBLE);
+                notspam.setVisibility(View.INVISIBLE);
                 refresh.setVisible(true);
                 edit=false;
                 cancel1=true;
@@ -234,6 +252,7 @@ public class MainActivity extends AppCompatActivity{
             }
         });
         //Delete Button
+
         button2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
